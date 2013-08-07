@@ -13,6 +13,7 @@ with qw(
 	Dist::Inkt::Role::WriteMetaJSON
 	Dist::Inkt::Role::WriteMetaYML
 	Dist::Inkt::Role::WriteMetaTTL
+	Dist::Inkt::Role::WriteChanges
 );
 
 has name => (
@@ -86,6 +87,19 @@ sub _build_metadata
 		name    => $self->name,
 		version => $self->version,
 	});
+}
+
+has project_uri => (
+	is       => 'ro',
+	isa      => Str,
+	lazy     => 1,
+	builder  => '_build_project_uri',
+);
+
+sub _build_project_uri
+{
+	my $self = shift;
+	sprintf('http://purl.org/NET/cpan-uri/dist/%s/project', $self->name);
 }
 
 has targets => (
