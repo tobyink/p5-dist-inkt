@@ -15,8 +15,8 @@ sub Build_MetaJSON
 {
 	my $self = shift;
 	my $file = $self->targetfile('META.json');
-	$self->metadata->save($file, { version => '2' });
 	$self->log('Writing %s', $file);
+	$self->metadata->save($file, { version => '2' });
 }
 
 1;

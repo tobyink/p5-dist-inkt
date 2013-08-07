@@ -19,6 +19,8 @@ after PopulateMetadata => sub
 {
 	my $self = shift;
 	
+	$self->log('Processing the DOAP vocabulary');
+	
 	my $model = $self->model;
 	my $uri   = 'RDF::Trine::Node::Resource'->new($self->project_uri);
 	my $meta  = $self->metadata;

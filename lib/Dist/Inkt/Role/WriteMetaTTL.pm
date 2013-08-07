@@ -16,6 +16,7 @@ sub Build_MetaTTL
 {
 	my $self = shift;
 	my $file = $self->targetfile('META.ttl');
+	$self->log('Writing %s', $file);
 	
 	my $serializer = eval {
 		require RDF::TrineX::Serializer::MockTurtleSoup;
@@ -27,8 +28,6 @@ sub Build_MetaTTL
 		to    => $file->openw,
 		using => $serializer,
 	);
-	
-	$self->log('Writing %s', $file);
 }
 
 1;
