@@ -8,15 +8,6 @@ use Types::Standard -types;
 use Types::Path::Tiny -types;
 use namespace::autoclean;
 
-with qw(
-	Dist::Inkt::Role::ReadMetaDir
-	Dist::Inkt::Role::ProcessDOAP
-	Dist::Inkt::Role::WriteMetaJSON
-	Dist::Inkt::Role::WriteMetaYML
-	Dist::Inkt::Role::WriteMetaTTL
-	Dist::Inkt::Role::WriteChanges
-);
-
 has name => (
 	is       => 'ro',
 	isa      => Str,
@@ -113,6 +104,7 @@ has targets => (
 sub BUILD
 {
 	my $self = shift;
+	return if $self->{_already_built}++;
 	$self->PopulateModel;
 	$self->PopulateMetadata;
 }
