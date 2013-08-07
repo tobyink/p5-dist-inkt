@@ -10,6 +10,7 @@ use namespace::autoclean;
 
 with qw(
 	Dist::Inkt::Role::ReadMetaDir
+	Dist::Inkt::Role::ProcessDOAP
 	Dist::Inkt::Role::WriteMetaJSON
 	Dist::Inkt::Role::WriteMetaYML
 	Dist::Inkt::Role::WriteMetaTTL
@@ -84,8 +85,9 @@ sub _build_metadata
 	require CPAN::Meta;
 	my $self = shift;
 	return 'CPAN::Meta'->new({
-		name    => $self->name,
-		version => $self->version,
+		name     => $self->name,
+		version  => $self->version,
+		no_index => { directory => [qw/ inc t xt /] },
 	});
 }
 
