@@ -7,6 +7,8 @@ use Moose::Role;
 use RDF::TrineX::Functions 'parse';
 use namespace::autoclean;
 
+with 'Dist::Inkt::Role::RDFModel';
+
 after PopulateModel => sub {
 	my $self = shift;
 	for my $file ($self->sourcefile('meta')->children)

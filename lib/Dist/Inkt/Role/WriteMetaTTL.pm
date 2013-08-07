@@ -7,6 +7,8 @@ use Moose::Role;
 use RDF::TrineX::Functions 'serialize';
 use namespace::autoclean;
 
+with 'Dist::Inkt::Role::RDFModel';
+
 after BUILD => sub {
 	my $self = shift;
 	push @{ $self->targets }, 'MetaTTL';

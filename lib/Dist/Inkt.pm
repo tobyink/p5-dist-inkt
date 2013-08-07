@@ -51,19 +51,6 @@ sub _build_targetdir
 	return $dir;
 }
 
-has model => (
-	is       => 'ro',
-	isa      => InstanceOf['RDF::Trine::Model'],
-	lazy     => 1,
-	builder  => '_build_model',
-);
-
-sub _build_model
-{
-	require RDF::Trine;
-	return 'RDF::Trine::Model'->temporary_model;
-}
-
 has metadata => (
 	is       => 'ro',
 	isa      => InstanceOf['CPAN::Meta'],
