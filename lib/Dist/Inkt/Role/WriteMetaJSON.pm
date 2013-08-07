@@ -8,7 +8,7 @@ use namespace::autoclean;
 
 after BUILD => sub {
 	my $self = shift;
-	push @{ $self->targets }, 'MetaJSON';
+	unshift @{ $self->targets }, 'MetaJSON';
 };
 
 sub Build_MetaJSON

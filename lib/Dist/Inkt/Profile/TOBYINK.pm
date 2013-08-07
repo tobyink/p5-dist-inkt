@@ -1,5 +1,8 @@
 package Dist::Inkt::Profile::TOBYINK;
 
+our $AUTHORITY = 'cpan:TOBYINK';
+our $VERSION   = '0.001';
+
 use Moose;
 
 extends 'Dist::Inkt';

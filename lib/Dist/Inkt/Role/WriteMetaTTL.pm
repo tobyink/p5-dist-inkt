@@ -11,7 +11,7 @@ with 'Dist::Inkt::Role::RDFModel';
 
 after BUILD => sub {
 	my $self = shift;
-	push @{ $self->targets }, 'MetaTTL';
+	unshift @{ $self->targets }, 'MetaTTL';
 };
 
 sub Build_MetaTTL

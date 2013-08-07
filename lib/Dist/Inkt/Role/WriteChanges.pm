@@ -11,7 +11,7 @@ with 'Dist::Inkt::Role::RDFModel';
 
 after BUILD => sub {
 	my $self = shift;
-	push @{ $self->targets }, 'Changes';
+	unshift @{ $self->targets }, 'Changes';
 };
 
 sub Build_Changes

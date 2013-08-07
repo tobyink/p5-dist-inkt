@@ -8,7 +8,7 @@ use namespace::autoclean;
 
 after BUILD => sub {
 	my $self = shift;
-	push @{ $self->targets }, 'MetaYML';
+	unshift @{ $self->targets }, 'MetaYML';
 };
 
 sub Build_MetaYML
