@@ -1,0 +1,23 @@
+package Dist::Inkt::Role::ReadMetaDir;
+
+our $AUTHORITY = 'cpan:TOBYINK';
+our $VERSION   = '0.001';
+
+use Moose::Role;
+use RDF::TrineX::Functions 'parse';
+use namespace::autoclean;
+
+after PopulateModel => sub {
+	my $self = shift;
+	for my $file ($self->sourcefile('meta')->children)
+	{
+		$self->log('Reading %s', $file);
+		$file =~ /\.pret$/
+			? do {
+				require RDF::TrineX::Parser::Pretdsl;
+				parse($file, into => $self->model, using => 'RDF::TrineX::Parser::Pretdsl'->new)
+			}: parse($file, into => $self->model);
+	}
+};
+
+1;

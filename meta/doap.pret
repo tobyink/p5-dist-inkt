@@ -1,0 +1,19 @@
+# This file contains general metadata about the project.
+
+@prefix : <http://usefulinc.com/ns/doap#>.
+
+`Dist-Inkt`
+	:programming-language "Perl" ;
+	:shortdesc            "yet another distribution builder";
+	:homepage             <https://metacpan.org/release/Dist-Inkt>;
+	:download-page        <https://metacpan.org/release/Dist-Inkt>;
+	:bug-database         <http://rt.cpan.org/Dist/Display.html?Queue=Dist-Inkt>;
+#	:repository           [ a :GitRepository; :browse <https://github.com/tobyink/p5-dist-inkt> ];
+	:created              2013-08-07;
+	:license              <http://dev.perl.org/licenses/>;
+	:maintainer           cpan:TOBYINK;
+	:developer            cpan:TOBYINK.
+
+<http://dev.perl.org/licenses/>
+	dc:title  "the same terms as the perl 5 programming language system itself".
+

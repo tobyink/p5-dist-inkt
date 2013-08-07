@@ -1,0 +1,10 @@
+# This file provides instructions for packaging.
+
+@prefix : <http://ontologi.es/doap-deps#>.
+
+`Dist-Inkt`
+	perl_version_from m`Dist::Inkt`;
+	version_from      m`Dist::Inkt`;
+	readme_from       m`Dist::Inkt` ;
+	.
+
