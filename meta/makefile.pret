@@ -5,6 +5,19 @@
 `Dist-Inkt`
 	perl_version_from m`Dist::Inkt`;
 	version_from      m`Dist::Inkt`;
-	readme_from       m`Dist::Inkt` ;
+	readme_from       m`Dist::Inkt`;
+	:runtime-requirement  [ :on "Moose 2.0800"^^:CpanId ];
+	:runtime-requirement  [ :on "Path::Iterator::Rule 0"^^:CpanId ];
+	:runtime-requirement  [ :on "Path::Tiny 0"^^:CpanId ];
+	:runtime-requirement  [ :on "RDF::DOAP::ChangeSets 0"^^:CpanId ];
+	:runtime-requirement  [ :on "RDF::Trine 1.000"^^:CpanId ];
+	:runtime-requirement  [ :on "RDF::TrineX::Functions 0"^^:CpanId ];
+	:runtime-requirement  [ :on "RDF::TrineX::Parser::Pretdsl 0"^^:CpanId ];
+	:runtime-requirement  [ :on "RDF::TrineX::Serializer::MockTurtleSoup 0"^^:CpanId ];
+	:runtime-requirement  [ :on "Types::Path::Tiny 0"^^:CpanId ];
+	:runtime-requirement  [ :on "Types::Standard 0"^^:CpanId ];
+	:runtime-requirement  [ :on "namespace::autoclean 0"^^:CpanId ];
+	:runtime-requirement  [ :on "perl 5.010001"^^:CpanId ];
+	:test-requirement     [ :on "Test::More 0.96"^^:CpanId ];
 	.
 
