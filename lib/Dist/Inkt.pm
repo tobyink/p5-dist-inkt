@@ -10,8 +10,6 @@ use Path::Tiny 'path';
 use Path::Iterator::Rule;
 use namespace::autoclean;
 
-with qw( Dist::Inkt::Role::CopyFiles );
-
 has name => (
 	is       => 'ro',
 	isa      => Str,
