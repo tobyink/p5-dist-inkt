@@ -17,6 +17,7 @@ with qw(
 	Dist::Inkt::Role::WriteMetaYML
 	Dist::Inkt::Role::WriteMetaTTL
 	Dist::Inkt::Role::WriteChanges
+	Dist::Inkt::Role::WriteCOPYRIGHT
 );
 
 1;
