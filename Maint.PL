@@ -8,6 +8,4 @@ my $dist = 'Dist::Inkt::Profile::TOBYINK'->new(
 	'version'  => '0.001',
 );
 
-$dist->BuildTargets;
-$dist->BuildManifest;
-$dist->BuildTarball;
+$dist->BuildAll;

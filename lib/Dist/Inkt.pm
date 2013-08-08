@@ -85,22 +85,21 @@ sub _build_project_uri
 	sprintf('http://purl.org/NET/cpan-uri/dist/%s/project', $self->name);
 }
 
-has manifest_skip
-{
+has manifest_skip => (
 	is       => 'ro',
 	isa      => ArrayRef[ CodeRef | RegexpRef | Str ],
-	builder  => '_manifest_skip',
-}
+	builder  => '_build_manifest_skip',
+);
 
 sub _build_manifest_skip
 {
-	+[
-		qr{^(meta|xt|blib|cover_db)/},
-		qr{^\./},
-		qr{^[Dd]evel./},
-		qr{~$},
-		qr{\.(orig|patch|rej|bak|old|tmp)$},
-		'Maint.PL',
+	return [
+		qr!^(meta|xt|blib|cover_db)/!,
+		qr!^\./!,
+		qr!^[Dd]evel./!,
+		qr!~$!,
+		qr!\.(orig|patch|rej|bak|old|tmp)$!,
+		qq!Maint.PL!,
 	];
 }
 
@@ -112,7 +111,7 @@ has targets => (
 
 sub _build_targets
 {
-	+[];
+	return [];
 }
 
 sub BUILD
@@ -141,27 +140,44 @@ sub BuildManifest
 {
 	my $self = shift;
 	
-	$self->log('Generating MANIFEST');
+	my $file = $self->targetfile('MANIFEST');
+	$self->log("Writing $file");
 	
 	my $rule = 'Path::Iterator::Rule'->new->file;
 	my $root = $self->targetdir;
 	my @files = map { path($_)->relative($root) } $rule->all($root);
 	
-	$self->targetfile('MANIFEST')->spew(sort @files);
+	$file->spew(map "$_\n", sort @files);
 }
 
 sub BuildTarball
 {
 	my $self = shift;
-	my $file = $_[0] || sprintf('%s.tar.gz', $self->targetdir);
+	my $file = path($_[0] || sprintf('%s.tar.gz', $self->targetdir));
+	$self->log("Writing $file");
 	
 	require Archive::Tar;
 	my $tar = 'Archive::Tar'->new;
 	
 	my $rule = 'Path::Iterator::Rule'->new->file;
-	$tar->add_files( $rule->all($self->targetdir) );
+	my $root = $self->targetdir;
+	my $pfx  = $root->basename;
+	for ($rule->all($root))
+	{
+		my $abs = path($_);
+		$tar->add_files($abs);
+		$tar->rename(substr($abs, 1), "$pfx/".$abs->relative($root));
+	}
 	
-	$tar->write($file);
+	$tar->write($file, Archive::Tar::COMPRESS_GZIP());
+}
+
+sub BuildAll
+{
+	my $self = shift;
+	$self->BuildTargets;
+	$self->BuildManifest;
+	$self->BuildTarball;
 }
 
 sub log
