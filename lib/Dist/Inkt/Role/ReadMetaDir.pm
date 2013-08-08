@@ -13,6 +13,8 @@ after PopulateModel => sub {
 	my $self = shift;
 	for my $file ($self->sourcefile('meta')->children)
 	{
+		next unless $file =~ /\.(pret|pretdsl|ttl|turtle|nt|ntriples|rdf|rdfx)$/i;
+		
 		$self->log('Reading %s', $file);
 		$file =~ /\.pret$/
 			? do {
