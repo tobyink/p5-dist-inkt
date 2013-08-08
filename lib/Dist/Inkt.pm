@@ -66,12 +66,17 @@ sub _build_metadata
 {
 	require CPAN::Meta;
 	my $self = shift;
-	return 'CPAN::Meta'->new({
-		name         => $self->name,
-		version      => $self->version,
-		no_index     => { directory => [qw/ inc t xt /] },
-		generated_by => sprintf('%s version %s', ref($self), $self->VERSION),
+	my $meta = 'CPAN::Meta'->new({
+		name           => $self->name,
+		version        => $self->version,
+		no_index       => { directory => [qw/ inc t xt /] },
+		generated_by   => sprintf('%s version %s', ref($self), $self->VERSION),
+		dynamic_config => 0,
 	});
+	for (qw/ license author /) {
+		$meta->{$_} = [] if @{$meta->{$_}}==1 && $meta->{$_}[0] eq 'unknown';
+	}
+	return $meta;	
 }
 
 has project_uri => (
