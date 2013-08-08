@@ -9,5 +9,5 @@ my $dist = 'Dist::Inkt::Profile::TOBYINK'->new(
 );
 
 $dist->BuildTargets;
-
-print $dist->dump(1);
+$dist->BuildManifest;
+$dist->BuildTarball;

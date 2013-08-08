@@ -6,6 +6,8 @@ our $VERSION   = '0.001';
 use Moose;
 use Types::Standard -types;
 use Types::Path::Tiny -types;
+use Path::Tiny 'path';
+use Path::Iterator::Rule;
 use namespace::autoclean;
 
 has name => (
@@ -83,11 +85,35 @@ sub _build_project_uri
 	sprintf('http://purl.org/NET/cpan-uri/dist/%s/project', $self->name);
 }
 
+has manifest_skip
+{
+	is       => 'ro',
+	isa      => ArrayRef[ CodeRef | RegexpRef | Str ],
+	builder  => '_manifest_skip',
+}
+
+sub _build_manifest_skip
+{
+	+[
+		qr{^(meta|xt|blib|cover_db)/},
+		qr{^\./},
+		qr{^[Dd]evel./},
+		qr{~$},
+		qr{\.(orig|patch|rej|bak|old|tmp)$},
+		'Maint.PL',
+	];
+}
+
 has targets => (
 	is       => 'ro',
 	isa      => ArrayRef[Str],
-	default  => sub { [] },
+	builder  => '_build_targets',
 );
+
+sub _build_targets
+{
+	+[];
+}
 
 sub BUILD
 {
@@ -109,6 +135,33 @@ sub BuildTargets
 		my $method = "Build_$target";
 		$self->$method;
 	}
+}
+
+sub BuildManifest
+{
+	my $self = shift;
+	
+	$self->log('Generating MANIFEST');
+	
+	my $rule = 'Path::Iterator::Rule'->new->file;
+	my $root = $self->targetdir;
+	my @files = map { path($_)->relative($root) } $rule->all($root);
+	
+	$self->targetfile('MANIFEST')->spew(sort @files);
+}
+
+sub BuildTarball
+{
+	my $self = shift;
+	my $file = $_[0] || sprintf('%s.tar.gz', $self->targetdir);
+	
+	require Archive::Tar;
+	my $tar = 'Archive::Tar'->new;
+	
+	my $rule = 'Path::Iterator::Rule'->new->file;
+	$tar->add_files( $rule->all($self->targetdir) );
+	
+	$tar->write($file);
 }
 
 sub log
