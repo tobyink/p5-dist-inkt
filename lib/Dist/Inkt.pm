@@ -10,6 +10,8 @@ use Path::Tiny 'path';
 use Path::Iterator::Rule;
 use namespace::autoclean;
 
+with qw( Dist::Inkt::Role::CopyFiles );
+
 has name => (
 	is       => 'ro',
 	isa      => Str,
@@ -83,24 +85,6 @@ sub _build_project_uri
 {
 	my $self = shift;
 	sprintf('http://purl.org/NET/cpan-uri/dist/%s/project', $self->name);
-}
-
-has manifest_skip => (
-	is       => 'ro',
-	isa      => ArrayRef[ CodeRef | RegexpRef | Str ],
-	builder  => '_build_manifest_skip',
-);
-
-sub _build_manifest_skip
-{
-	return [
-		qr!^(meta|xt|blib|cover_db)/!,
-		qr!^\./!,
-		qr!^[Dd]evel./!,
-		qr!~$!,
-		qr!\.(orig|patch|rej|bak|old|tmp)$!,
-		qq!Maint.PL!,
-	];
 }
 
 has targets => (
