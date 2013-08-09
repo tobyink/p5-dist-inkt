@@ -35,7 +35,6 @@ sub _build_manifest_skip
 		qr!~$!,
 		qr!\.(orig|patch|rej|bak|old|tmp)$!,
 		qr!^$name.*\.tar.gz$!,
-		qq!Maint.PL!,
 		@{ $self->also_skip },
 	];
 }

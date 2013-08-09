@@ -1,0 +1,31 @@
+use strict;
+use warnings;
+use Cwd qw(cwd);
+use File::chdir;
+use Path::FindDev qw(find_dev);
+use Module::Runtime qw(use_package_optimistically);
+
+local($CWD) = my($root) = find_dev(cwd);
+
+my $ini = $root->child('dist.ini');
+$ini->exists or die("Could not find dist.ini; bailing out");
+
+my @ini = grep /^;;/, do { my $fh = $ini->openr; <$fh> };
+chomp @ini;
+
+my %config = map {
+	s/(?:^;;\s*)|(?:\s*$)//g;
+	my ($key, $value) = split /\s*=\s*/, $_, 2;
+	$key => scalar(eval($value));
+} @ini;
+
+my $class = delete $config{class}
+	or die("No Dist::Inkt subclass specified in $ini; bailing out");
+
+$config{rootdir} ||= $root;
+
+my $dist = use_package_optimistically($class)->new(%config);
+
+$dist->BuildAll;
+
+exit(0);
