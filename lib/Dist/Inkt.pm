@@ -144,8 +144,12 @@ sub BuildTargets
 {
 	my $self = shift;
 	
+	$self->Build_Files if $self->DOES('Dist::Inkt::Role::CopyFiles');
+	
 	for my $target (@{ $self->targets })
 	{
+		next if $self->DOES('Dist::Inkt::Role::CopyFiles') && $target eq 'Files';
+		
 		my $method = "Build_$target";
 		$self->$method;
 	}
