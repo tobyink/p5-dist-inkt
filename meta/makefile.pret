@@ -10,8 +10,9 @@
 	:runtime-requirement  [ :on "Data::Dump 0"^^:CpanId ];
 	:runtime-requirement  [ :on "List::MoreUtils 0"^^:CpanId ];
 	:runtime-requirement  [ :on "Module::Metadata 0"^^:CpanId ];
-	:runtime-requirement  [ :on "Moose 2.0800"^^:CpanId ];
+	:runtime-requirement  [ :on "Module::Signature 0"^^:CpanId ];
 	:runtime-requirement  [ :on "MooX::Struct 0"^^:CpanId ];
+	:runtime-requirement  [ :on "Moose 2.0800"^^:CpanId ];
 	:runtime-requirement  [ :on "Path::Iterator::Rule 0"^^:CpanId ];
 	:runtime-requirement  [ :on "Path::Tiny 0"^^:CpanId ];
 	:runtime-requirement  [ :on "RDF::DOAP::ChangeSets 0"^^:CpanId ];
