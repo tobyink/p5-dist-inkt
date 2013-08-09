@@ -363,6 +363,7 @@ sub Build_COPYRIGHT
 {
 	my $self = shift;
 	my $file = $self->targetfile('COPYRIGHT');
+	$file->exists and return $self->log('Skipping %s; it already exists', $file);
 	$self->log('Writing %s', $file);
 	
 	$file->spew_utf8( $self->debian_copyright->to_string );

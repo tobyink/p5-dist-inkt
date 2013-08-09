@@ -18,6 +18,10 @@ sub Build_LICENSE
 {
 	my $self = shift;
 	
+	my $file = $self->targetfile('LICENSE');
+	$file->exists and return $self->log('Skipping %s; it already exists', $file);
+	$self->log('Writing %s', $file);
+	
 	my $L = $self->metadata->{license};
 	unless (@{ $L || [] }==1)
 	{
@@ -31,9 +35,6 @@ sub Build_LICENSE
 		$self->log("WARNING: could not grok licence '%s'", @$L);
 		return;
 	}
-	
-	my $file = $self->targetfile('LICENSE');
-	$self->log('Writing %s', $file);
 	
 	eval "require $class;";
 	my $licence = $class->new({

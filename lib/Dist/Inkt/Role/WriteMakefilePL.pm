@@ -16,6 +16,7 @@ sub Build_MakefilePL
 {
 	my $self = shift;
 	my $file = $self->targetfile('Makefile.PL');
+	$file->exists and return $self->log('Skipping %s; it already exists', $file);
 	$self->log('Writing %s', $file);
 	
 	my $dump = pp( $self->metadata->as_struct({version => '2'}) );

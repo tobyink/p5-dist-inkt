@@ -18,6 +18,7 @@ sub Build_Changes
 {
 	my $self = shift;
 	my $file = $self->targetfile('Changes');
+	$file->exists and return $self->log('Skipping %s; it already exists', $file);
 	$self->log('Writing %s', $file);
 	
 	my $ch = 'RDF::DOAP::ChangeSets'->new($self->project_uri, $self->model);

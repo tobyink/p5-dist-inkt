@@ -31,6 +31,7 @@ sub Build_CREDITS
 {
 	my $self = shift;
 	my $file = $self->targetfile('CREDITS');
+	$file->exists and return $self->log('Skipping %s; it already exists', $file);
 	$self->log('Writing %s', $file);
 	
 	my $fh = $file->openw_utf8;

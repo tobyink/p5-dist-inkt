@@ -17,6 +17,7 @@ sub Build_README
 	my $self = shift;
 	
 	my $file = $self->targetfile('README');
+	$file->exists and return $self->log('Skipping %s; it already exists', $file);
 	$self->log('Writing %s', $file);
 	
 	my $pod = 'Pod::Text'->new(
