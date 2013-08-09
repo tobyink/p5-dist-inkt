@@ -6,6 +6,7 @@ our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.001';
 
 use Moose;
+use Module::Metadata;
 use Types::Standard -types;
 use Types::Path::Tiny -types;
 use Path::Tiny 'path';
@@ -18,11 +19,36 @@ has name => (
 	required => 1,
 );
 
+has lead_module => (
+	is       => 'ro',
+	isa      => Str,
+	lazy     => 1,
+	builder  => '_build_lead_module',
+);
+
+sub _build_lead_module
+{
+	my $self = shift;
+	(my $name = $self->name) =~ s/-/::/g;
+	return $name;
+}
+
 has version => (
 	is       => 'ro',
 	isa      => Str,
-	required => 1,
+	lazy     => 1,
+	builder  => '_build_version',
 );
+
+sub _build_version
+{
+	my $self = shift;
+	my $mm = 'Module::Metadata'->new_from_module(
+		$self->lead_module,
+		inc => [$self->sourcefile('lib')],
+	);
+	return $mm->{version}{original};
+}
 
 has rootdir => (
 	is       => 'ro',
