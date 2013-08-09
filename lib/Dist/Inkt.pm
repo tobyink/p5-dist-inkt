@@ -144,6 +144,8 @@ sub BuildTargets
 {
 	my $self = shift;
 	
+	$self->targetdir->remove_tree;
+	
 	$self->Build_Files if $self->DOES('Dist::Inkt::Role::CopyFiles');
 	
 	for my $target (@{ $self->targets })
