@@ -23,7 +23,7 @@ sub _build_has_shared_files
 
 after PopulateMetadata => sub {
 	my $self = shift;
-	$self->metadata->{prereqs}{configure}{requires}{'ExtUtils::MakeMaker'} = '6.30'
+	$self->metadata->{prereqs}{configure}{requires}{'ExtUtils::MakeMaker'} = '6.31'
 		if !defined $self->metadata->{prereqs}{configure}{requires}{'ExtUtils::MakeMaker'};
 	$self->metadata->{prereqs}{configure}{requires}{'File::ShareDir::Install'} = '0.02'
 		if $self->has_shared_files
@@ -71,7 +71,7 @@ sub Build_MakefilePL
 
 __DATA__
 use strict;
-use ExtUtils::MakeMaker 6.30;
+use ExtUtils::MakeMaker 6.31;
 
 my $meta = %%%METADATA%%%;
 
@@ -140,8 +140,29 @@ else
 		die "Need Perl >= $minperl" unless $] >= $minperl;
 	}
 }
-%%%SHARE%%%
-WriteMakefile(%WriteMakefileArgs);
 
+sub FixMakefile
+{
+	return unless -d 'inc';
+	my $file = shift;
+	
+	local *MAKEFILE;
+	open MAKEFILE, "< $file" or die "FixMakefile: Couldn't open $file: $!; bailing out";
+	my $makefile = do { local $/; <MAKEFILE> };
+	close MAKEFILE or die $!;
+	
+	$makefile =~ s/\b(test_harness\(\$\(TEST_VERBOSE\), )/$1'inc', /;
+	$makefile =~ s/( -I\$\(INST_ARCHLIB\))/ -Iinc$1/g;
+	$makefile =~ s/( "-I\$\(INST_LIB\)")/ "-Iinc"$1/g;
+	$makefile =~ s/^(FULLPERL = .*)/$1 "-Iinc"/m;
+	$makefile =~ s/^(PERL = .*)/$1 "-Iinc"/m;
+	
+	open  MAKEFILE, "> $file" or die "FixMakefile: Couldn't open $file: $!; bailing out";
+	print MAKEFILE $makefile or die $!;
+	close MAKEFILE or die $!;
+}
+%%%SHARE%%%
+my $mm = WriteMakefile(%WriteMakefileArgs);
+FixMakefile($mm->{FIRST_MAKEFILE} || 'Makefile');
 exit(0);
 
