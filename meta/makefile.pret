@@ -6,6 +6,7 @@
 	perl_version_from m`Dist::Inkt`;
 	version_from      m`Dist::Inkt`;
 	readme_from       m`Dist::Inkt`;
+	:runtime-requirement  [ :on "CPAN::Meta 0"^^:CpanId ];
 	:runtime-requirement  [ :on "List::MoreUtils 0"^^:CpanId ];
 	:runtime-requirement  [ :on "Moose 2.0800"^^:CpanId ];
 	:runtime-requirement  [ :on "MooX::Struct 0"^^:CpanId ];
