@@ -7,6 +7,12 @@ use Moose::Role;
 use Data::Dump 'pp';
 use namespace::autoclean;
 
+after PopulateMetadata => sub {
+	my $self = shift;
+	$self->metadata->{prereqs}{configure}{requires}{'ExtUtils::MakeMaker'} = '6.30'
+		unless defined $self->metadata->{prereqs}{configure}{requires}{'ExtUtils::MakeMaker'};
+};
+
 after BUILD => sub {
 	my $self = shift;
 	unshift @{ $self->targets }, 'MakefilePL';
@@ -19,20 +25,43 @@ sub Build_MakefilePL
 	$file->exists and return $self->log('Skipping %s; it already exists', $file);
 	$self->log('Writing %s', $file);
 	
-	my $dump = pp( $self->metadata->as_struct({version => '2'}) );
-	chomp $dump;
-	$file->spew(
-		"use strict;\n",
-		"my \$meta = $dump;\n",
-		<DATA>,
+	chomp(
+		my $dump = pp( $self->metadata->as_struct({version => '2'}) )
 	);
+
+	my $dynamic_config = do {
+		my $dc = $self->sourcefile('meta/DYNAMIC_CONFIG.PL');
+		$dc->exists ? $dc->slurp_utf8 : '';
+	};
+	
+	my $makefile = do { local $/ = <DATA> };
+	$makefile =~ s/%%%METADATA%%%/$dump/;
+	$makefile =~ s/%%%DYNAMIC_CONFIG%%%/$dynamic_config/;
+	$file->spew_utf8($makefile);
 }
 
 1;
 
 __DATA__
+use strict;
+use ExtUtils::MakeMaker 6.30;
 
-use ExtUtils::MakeMaker;
+my $meta = %%%METADATA%%%;
+
+my %dynamic_config;
+DYNAMIC_CONFIG: do {%%%DYNAMIC_CONFIG%%%};
+
+my %WriteMakefileArgs = (
+	ABSTRACT           => $meta->{abstract},
+	AUTHOR             => $meta->{author},
+	DISTNAME           => $meta->{name},
+	DISTVNAME          => sprintf('%s-%s', $meta->{name}, $meta->{version}),
+	EXE_FILES          => [],  ### XXX - TODO
+	LICENSE            => $meta->{license}[0],
+	NAME               => do { my $n = $meta->{name}; $n =~ s/-/::/g; $n },
+	VERSION            => $meta->{version},
+	%dynamic_config,
+);
 
 sub deps
 {
@@ -51,41 +80,42 @@ sub deps
 my ($build_requires, $configure_requires, $runtime_requires, $test_requires);
 if ('ExtUtils::MakeMaker'->VERSION >= 6.6303)
 {
-	$build_requires     = deps('build');
-	$configure_requires = deps('configure');
-	$test_requires      = deps('test');
-	$runtime_requires   = deps('runtime');
+	$WriteMakefileArgs{BUILD_REQUIRES}     ||= deps('build');
+	$WriteMakefileArgs{CONFIGURE_REQUIRES} ||= deps('configure');
+	$WriteMakefileArgs{TEST_REQUIRES}      ||= deps('test');
+	$WriteMakefileArgs{PREREQ_PM}          ||= deps('runtime');
 }
 elsif ('ExtUtils::MakeMaker'->VERSION >= 6.5503)
 {
-	$build_requires     = deps('build');
-	$configure_requires = deps('configure', 'test');
-	$runtime_requires   = deps('runtime');
+	$WriteMakefileArgs{BUILD_REQUIRES}     ||= deps('build');
+	$WriteMakefileArgs{CONFIGURE_REQUIRES} ||= deps('configure', 'test');
+	$WriteMakefileArgs{PREREQ_PM}          ||= deps('runtime');	
 }
 elsif ('ExtUtils::MakeMaker'->VERSION >= 6.52)
 {
-	$configure_requires = deps('configure', 'test', 'build');
-	$runtime_requires   = deps('runtime');
+	$WriteMakefileArgs{CONFIGURE_REQUIRES} ||= deps('configure', 'build', 'test');
+	$WriteMakefileArgs{PREREQ_PM}          ||= deps('runtime');	
 }
 else
 {
-	$runtime_requires   = deps('runtime', 'configure', 'test', 'build');
+	$WriteMakefileArgs{PREREQ_PM}          ||= deps('configure', 'build', 'test', 'runtime');	
 }
 
-WriteMakefile(
-	ABSTRACT           => $meta->{abstract},
-	AUTHOR             => $meta->{author},
-	BUILD_REQUIRES     => $build_requires,
-	CONFIGURE_REQUIRES => $configure_requires,
-	DISTNAME           => $meta->{name},
-	DISTVNAME          => sprintf('%s-%s', $meta->{name}, $meta->{version}),
-	EXE_FILES          => [],   # XXX - TODO
-	LICENSE            => $meta->{license}[0],
-	NAME               => do { my $n = $meta->{name}; $n =~ s/-/::/g; $n },
-	PREREQ_PM          => $runtime_requires,
-	TEST_REQUIRES      => $test_requires,
-	VERSION            => $meta->{version},
-);
+{
+	my $minperl = delete $WriteMakefileArgs{PREREQ_PM}{perl};
+	exists($WriteMakefileArgs{$_}) && delete($WriteMakefileArgs{$_}{perl})
+		for qw(BUILD_REQUIRES TEST_REQUIRES CONFIGURE_REQUIRES);
+	if ($minperl and 'ExtUtils::MakeMaker'->VERSION >= 6.48)
+	{
+		$WriteMakefileArgs{MIN_PERL_VERSION} ||= $minperl;
+	}
+	elsif ($minperl)
+	{
+		die "Need Perl >= $minperl" unless $] >= $minperl;
+	}
+}
+
+WriteMakefile(%WriteMakefileArgs);
 
 exit(0);
 

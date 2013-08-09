@@ -1,3 +1,2 @@
 Makefile.PL:
 	EXE_FILES
-	dynamic config
