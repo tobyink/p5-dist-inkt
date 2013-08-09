@@ -1,7 +1,7 @@
 package Dist::Inkt::Role::MetaProvidesScripts;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.001';
+our $VERSION   = '0.002';
 
 use Moose::Role;
 use Path::Tiny 'path';
