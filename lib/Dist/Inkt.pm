@@ -96,7 +96,7 @@ sub _build_metadata
 	my $meta = 'CPAN::Meta'->new({
 		name           => $self->name,
 		version        => $self->version,
-		no_index       => { directory => [qw/ inc t xt /] },
+		no_index       => { directory => [qw/ eg examples inc t xt /] },
 		generated_by   => sprintf('%s version %s', ref($self), $self->VERSION),
 		dynamic_config => 0,
 	});
