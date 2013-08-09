@@ -166,7 +166,7 @@ sub BuildManifest
 	my $root = $self->targetdir;
 	my @files = map { path($_)->relative($root) } $rule->all($root);
 	
-	$file->spew(map "$_\n", sort @files);
+	$file->spew(map "$_\n", sort 'MANIFEST', @files);
 }
 
 sub BuildTarball
