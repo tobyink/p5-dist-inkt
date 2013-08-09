@@ -12,6 +12,7 @@ with qw(
 	Dist::Inkt::Role::ProcessDOAP
 	Dist::Inkt::Role::ProcessDOAPDeps
 	Dist::Inkt::Role::CopyFiles
+	Dist::Inkt::Role::CopyStandardDocuments
 	Dist::Inkt::Role::MetaProvides
 	Dist::Inkt::Role::MetaProvidesScripts
 	Dist::Inkt::Role::WriteMakefilePL
