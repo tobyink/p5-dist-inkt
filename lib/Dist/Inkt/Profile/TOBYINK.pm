@@ -21,6 +21,7 @@ with qw(
 	Dist::Inkt::Role::WriteCOPYRIGHT
 	Dist::Inkt::Role::WriteCREDITS
 	Dist::Inkt::Role::WriteLICENSE
+	Dist::Inkt::Role::WriteREADME
 );
 
 1;
