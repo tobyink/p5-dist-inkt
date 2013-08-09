@@ -224,6 +224,10 @@ __END__
 
 Dist::Inkt - yet another distribution builder
 
+=head1 STATUS
+
+Experimental.
+
 =head1 DESCRIPTION
 
 L<Dist::Zilla> didn't have the prerequisite amount of crazy for me, so
