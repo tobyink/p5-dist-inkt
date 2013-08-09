@@ -67,7 +67,8 @@ has targetdir => (
 	coerce   => 1,
 	builder  => '_build_targetdir',
 	handles  => {
-		targetfile => 'child',
+		targetfile  => 'child',
+		cleartarget => 'remove_tree',
 	},
 );
 
@@ -144,7 +145,7 @@ sub BuildTargets
 {
 	my $self = shift;
 	
-	$self->targetdir->remove_tree;
+	$self->cleartarget;
 	
 	$self->Build_Files if $self->DOES('Dist::Inkt::Role::CopyFiles');
 	
@@ -199,6 +200,7 @@ sub BuildAll
 	$self->BuildTargets;
 	$self->BuildManifest;
 	$self->BuildTarball;
+	$self->cleartarget;
 }
 
 sub log
