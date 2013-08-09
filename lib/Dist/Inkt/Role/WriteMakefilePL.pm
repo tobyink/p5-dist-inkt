@@ -56,7 +56,7 @@ my %WriteMakefileArgs = (
 	AUTHOR             => $meta->{author},
 	DISTNAME           => $meta->{name},
 	DISTVNAME          => sprintf('%s-%s', $meta->{name}, $meta->{version}),
-	EXE_FILES          => [],  ### XXX - TODO
+	EXE_FILES          => [ map $_->{file}, values %{ $meta->{x_provides_scripts} || {} } ],
 	LICENSE            => $meta->{license}[0],
 	NAME               => do { my $n = $meta->{name}; $n =~ s/-/::/g; $n },
 	VERSION            => $meta->{version},
