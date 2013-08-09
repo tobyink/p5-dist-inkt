@@ -4,7 +4,7 @@ our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.001';
 
 use Moose::Role;
-use RDF::DOAP::ChangeSets;
+use Data::Dump 'pp';
 use namespace::autoclean;
 
 after BUILD => sub {
@@ -18,11 +18,7 @@ sub Build_MakefilePL
 	my $file = $self->targetfile('Makefile.PL');
 	$self->log('Writing %s', $file);
 	
-	use Data::Dumper;
-	local $Data::Dumper::Terse    = 1;
-	local $Data::Dumper::Indent   = 1;
-	local $Data::Dumper::Sortkeys = 1;
-	my $dump = Dumper( $self->metadata->as_struct({version => '2'}) );
+	my $dump = pp( $self->metadata->as_struct({version => '2'}) );
 	chomp $dump;
 	$file->spew(
 		"use strict;\n",
