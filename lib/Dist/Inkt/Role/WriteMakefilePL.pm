@@ -8,6 +8,8 @@ use Types::Standard -types;
 use Data::Dump 'pp';
 use namespace::autoclean;
 
+sub DYNAMIC_CONFIG_PATH () { 'meta/DYNAMIC_CONFIG.PL' };
+
 has has_shared_files => (
 	is      => 'ro',
 	isa     => Bool,
@@ -28,6 +30,8 @@ after PopulateMetadata => sub {
 	$self->metadata->{prereqs}{configure}{requires}{'File::ShareDir::Install'} = '0.02'
 		if $self->has_shared_files
 		&& !defined $self->metadata->{prereqs}{configure}{requires}{'File::ShareDir::Install'};
+	$self->metadata->{dynamic_config} = 1
+		if $self->sourcefile(DYNAMIC_CONFIG_PATH)->exists;
 };
 
 after BUILD => sub {
@@ -48,7 +52,7 @@ sub Build_MakefilePL
 
 	my $dynamic_config = do
 	{
-		my $dc = $self->sourcefile('meta/DYNAMIC_CONFIG.PL');
+		my $dc = $self->sourcefile(DYNAMIC_CONFIG_PATH);
 		$dc->exists ? "\ndo {\n${\ $dc->slurp_utf8 }\n};" : '';
 	};
 	
