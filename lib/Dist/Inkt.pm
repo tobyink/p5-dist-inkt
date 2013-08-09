@@ -218,6 +218,8 @@ __END__
 
 =encoding utf-8
 
+=for stopwords gzipped tarball
+
 =head1 NAME
 
 Dist::Inkt - yet another distribution builder
