@@ -19,6 +19,7 @@ with qw(
 	Dist::Inkt::Role::WriteChanges
 	Dist::Inkt::Role::WriteCOPYRIGHT
 	Dist::Inkt::Role::WriteCREDITS
+	Dist::Inkt::Role::WriteLICENSE
 );
 
 1;
