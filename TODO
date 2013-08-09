@@ -1,0 +1,7 @@
+generate:
+	LICENSE
+	README
+Makefile.PL:
+	EXE_FILES
+	dynamic config
+signing dists
