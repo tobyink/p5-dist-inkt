@@ -103,7 +103,7 @@ sub _build_metadata
 	for (qw/ license author /) {
 		$meta->{$_} = [] if @{$meta->{$_}}==1 && $meta->{$_}[0] eq 'unknown';
 	}
-	return $meta;	
+	return $meta;
 }
 
 has project_uri => (

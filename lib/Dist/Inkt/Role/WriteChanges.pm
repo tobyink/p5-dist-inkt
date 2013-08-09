@@ -22,7 +22,7 @@ sub Build_Changes
 	$self->log('Writing %s', $file);
 	
 	my $ch = 'RDF::DOAP::ChangeSets'->new($self->project_uri, $self->model);
-	$ch->to_file($file);	
+	$ch->to_file($file);
 }
 
 1;

@@ -9,7 +9,7 @@ use namespace::autoclean;
 
 after PopulateMetadata => sub
 {
-	my $self = shift;	
+	my $self = shift;
 	$self->log("Finding provided packages");
 	
 	# XXX - should filter result using manifest_skip

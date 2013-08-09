@@ -128,12 +128,12 @@ sub doap_resources
 		$model->objects_for_predicate_list($uri, $DOAP->license, $DC->license)
 	];
 	
-	($resources{homepage}) = 
+	($resources{homepage}) =
 		map  { $_->uri }
 		grep { $_->is_resource }
 		$model->objects_for_predicate_list($uri, $DOAP->homepage, $FOAF->homepage, $FOAF->page);
 	
-	my (@bug) = 
+	my (@bug) =
 		map  { $_->uri }
 		grep { $_->is_resource }
 		$model->objects($uri, $DOAP->uri('bug-database'));
@@ -150,15 +150,15 @@ sub doap_resources
 	{
 		next REPO if $repo->is_literal;
 		
-		my ($browse) = 
+		my ($browse) =
 			map  { $_->uri }
 			grep { $_->is_resource }
 			$model->objects_for_predicate_list($repo, $DOAP->uri('browse'));
-		my ($location) = 
+		my ($location) =
 			map  { $_->uri }
 			grep { $_->is_resource }
 			$model->objects_for_predicate_list($repo, $DOAP->uri('location'));
-		my ($type) = 
+		my ($type) =
 			map  { $_->uri }
 			grep { $_->is_resource }
 			$model->objects_for_predicate_list($repo, $RDF->uri('type'));
@@ -174,18 +174,18 @@ sub doap_resources
 		}
 	}
 	
-	($resources{X_mailinglist}) = 
+	($resources{X_mailinglist}) =
 		map  { $_->uri }
 		grep { $_->is_resource }
 		$model->objects($uri, $DOAP->uri('mailing-list'));
 	
-	($resources{X_wiki}) = 
+	($resources{X_wiki}) =
 		map  { $_->uri }
 		grep { $_->is_resource }
 		$model->objects($uri, $DOAP->uri('wiki'));
 	
 	delete $resources{$_} for grep !defined $resources{$_}, keys %resources;
-
+	
 	return \%resources;
 }
 

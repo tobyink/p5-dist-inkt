@@ -111,7 +111,7 @@ sub doap_deps
 						unless $meta->{prereqs}{$phase}{$level2}{$mod} > $ver;
 				}
 			}
-		}			
+		}
 	}
 }
 
