@@ -4,13 +4,30 @@ our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.001';
 
 use Moose::Role;
+use Types::Standard -types;
 use Data::Dump 'pp';
 use namespace::autoclean;
+
+has has_shared_files => (
+	is      => 'ro',
+	isa     => Bool,
+	lazy    => 1,
+	builder => '_build_has_shared_files',
+);
+
+sub _build_has_shared_files
+{
+	my $self = shift;
+	!! $self->sourcefile('share')->is_dir;
+}
 
 after PopulateMetadata => sub {
 	my $self = shift;
 	$self->metadata->{prereqs}{configure}{requires}{'ExtUtils::MakeMaker'} = '6.30'
-		unless defined $self->metadata->{prereqs}{configure}{requires}{'ExtUtils::MakeMaker'};
+		if !defined $self->metadata->{prereqs}{configure}{requires}{'ExtUtils::MakeMaker'};
+	$self->metadata->{prereqs}{configure}{requires}{'File::ShareDir::Install'} = '0.02'
+		if $self->has_shared_files
+		&& !defined $self->metadata->{prereqs}{configure}{requires}{'File::ShareDir::Install'};
 };
 
 after BUILD => sub {
@@ -29,13 +46,23 @@ sub Build_MakefilePL
 		my $dump = pp( $self->metadata->as_struct({version => '2'}) )
 	);
 
-	my $dynamic_config = do {
+	my $dynamic_config = do
+	{
 		my $dc = $self->sourcefile('meta/DYNAMIC_CONFIG.PL');
-		$dc->exists ? $dc->slurp_utf8 : '';
+		$dc->exists ? "\ndo {\n${\ $dc->slurp_utf8 }\n};" : '';
 	};
+	
+	my $share = '';
+	if ($self->has_shared_files)
+	{
+		$share = "\nuse File::ShareDir::Install;\n"
+			. "install_share 'share';\n"
+			. "{ package MY; use File::ShareDir::Install qw(postamble) };\n";
+	}
 	
 	my $makefile = do { local $/ = <DATA> };
 	$makefile =~ s/%%%METADATA%%%/$dump/;
+	$makefile =~ s/%%%SHARE%%%/$share/;
 	$makefile =~ s/%%%DYNAMIC_CONFIG%%%/$dynamic_config/;
 	$file->spew_utf8($makefile);
 }
@@ -48,8 +75,7 @@ use ExtUtils::MakeMaker 6.30;
 
 my $meta = %%%METADATA%%%;
 
-my %dynamic_config;
-DYNAMIC_CONFIG: do {%%%DYNAMIC_CONFIG%%%};
+my %dynamic_config;%%%DYNAMIC_CONFIG%%%
 
 my %WriteMakefileArgs = (
 	ABSTRACT           => $meta->{abstract},
@@ -114,7 +140,7 @@ else
 		die "Need Perl >= $minperl" unless $] >= $minperl;
 	}
 }
-
+%%%SHARE%%%
 WriteMakefile(%WriteMakefileArgs);
 
 exit(0);
