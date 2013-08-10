@@ -234,7 +234,7 @@ L<Dist::Zilla> didn't have the prerequisite amount of crazy for me, so
 I wrote this instead.
 
 Dist::Inkt itself does virtually nothing; it creates an empty directory,
-generates a MANIFEST file, and then wraps it all up into a gzippped
+generates a MANIFEST file, and then wraps it all up into a gzipped
 tarball. But it provides various hooks along the way for subclasses
 to grab hold of. So the general idea is that you write a subclass of
 Dist::Inkt, which consumes various Moose::Roles to do the actual work
