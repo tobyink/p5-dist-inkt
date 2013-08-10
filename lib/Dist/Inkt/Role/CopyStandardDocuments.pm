@@ -1,7 +1,7 @@
 package Dist::Inkt::Role::CopyStandardDocuments;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.003';
+our $VERSION   = '0.004';
 
 use Moose::Role;
 use Types::Path::Tiny -types;

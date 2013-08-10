@@ -1,7 +1,7 @@
 package Dist::Inkt::Role::WriteMakefilePL;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.003';
+our $VERSION   = '0.004';
 
 use Moose::Role;
 use Types::Standard -types;
@@ -125,8 +125,8 @@ elsif ($EUMM >= 6.5503)
 }
 elsif ($EUMM >= 6.52)
 {
-	$WriteMakefileArgs{CONFIGURE_REQUIRES} ||= deps('configure', 'build', 'test');
-	$WriteMakefileArgs{PREREQ_PM}          ||= deps('runtime');	
+	$WriteMakefileArgs{CONFIGURE_REQUIRES} ||= deps('configure');
+	$WriteMakefileArgs{PREREQ_PM}          ||= deps('runtime', 'build', 'test');	
 }
 else
 {

@@ -17,3 +17,11 @@
 		item "Don't pass ExtUtils::MakeMaker the AUTHOR as an arrayref unless its version number >= 6.5702."^^Change;
 	].
 
+`Dist-Inkt 0.004 cpan:TOBYINK`
+	issued  2013-08-10;
+	changeset [
+		item "Attempt to support ExtUtils::MakeMaker 6.17. Don't pass WriteMakefile a LICENSE unless EUMM >= 6.3001; don't pass it a DISTVNAME at all."^^Change;
+		item "For ExtUtils::MakeMaker versions that don't support TEST_REQUIRES, bundle it in with BUILD_REQUIRES, not CONFIGURE_REQUIRES."^^Change;
+		item "For ExtUtils::MakeMaker versions that don't support BUILD_REQUIRES, bundle it in with PREREQ_PM, not CONFIGURE_REQUIRES."^^Change;
+	].
+
