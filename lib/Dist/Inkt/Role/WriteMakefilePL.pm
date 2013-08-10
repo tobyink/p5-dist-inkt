@@ -77,13 +77,15 @@ __DATA__
 use strict;
 use ExtUtils::MakeMaker 6.31;
 
+my $EUMM = 'ExtUtils::MakeMaker'->VERSION;
+
 my $meta = %%%METADATA%%%;
 
 my %dynamic_config;%%%DYNAMIC_CONFIG%%%
 
 my %WriteMakefileArgs = (
 	ABSTRACT           => $meta->{abstract},
-	AUTHOR             => $meta->{author},
+	AUTHOR             => ($EUMM >= 6.5702 ? $meta->{author} : $meta->{author}[0]),
 	DISTNAME           => $meta->{name},
 	DISTVNAME          => sprintf('%s-%s', $meta->{name}, $meta->{version}),
 	EXE_FILES          => [ map $_->{file}, values %{ $meta->{x_provides_scripts} || {} } ],
@@ -108,20 +110,20 @@ sub deps
 }
 
 my ($build_requires, $configure_requires, $runtime_requires, $test_requires);
-if ('ExtUtils::MakeMaker'->VERSION >= 6.6303)
+if ($EUMM >= 6.6303)
 {
 	$WriteMakefileArgs{BUILD_REQUIRES}     ||= deps('build');
 	$WriteMakefileArgs{CONFIGURE_REQUIRES} ||= deps('configure');
 	$WriteMakefileArgs{TEST_REQUIRES}      ||= deps('test');
 	$WriteMakefileArgs{PREREQ_PM}          ||= deps('runtime');
 }
-elsif ('ExtUtils::MakeMaker'->VERSION >= 6.5503)
+elsif ($EUMM >= 6.5503)
 {
 	$WriteMakefileArgs{BUILD_REQUIRES}     ||= deps('build');
 	$WriteMakefileArgs{CONFIGURE_REQUIRES} ||= deps('configure', 'test');
 	$WriteMakefileArgs{PREREQ_PM}          ||= deps('runtime');	
 }
-elsif ('ExtUtils::MakeMaker'->VERSION >= 6.52)
+elsif ($EUMM >= 6.52)
 {
 	$WriteMakefileArgs{CONFIGURE_REQUIRES} ||= deps('configure', 'build', 'test');
 	$WriteMakefileArgs{PREREQ_PM}          ||= deps('runtime');	
@@ -135,7 +137,7 @@ else
 	my $minperl = delete $WriteMakefileArgs{PREREQ_PM}{perl};
 	exists($WriteMakefileArgs{$_}) && delete($WriteMakefileArgs{$_}{perl})
 		for qw(BUILD_REQUIRES TEST_REQUIRES CONFIGURE_REQUIRES);
-	if ($minperl and 'ExtUtils::MakeMaker'->VERSION >= 6.48)
+	if ($minperl and $EUMM >= 6.48)
 	{
 		$WriteMakefileArgs{MIN_PERL_VERSION} ||= $minperl;
 	}
