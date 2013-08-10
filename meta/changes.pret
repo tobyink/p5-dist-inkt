@@ -11,3 +11,9 @@
 		item "Avoid creating empty 'x_contributors' keys in META.json/META.yml."^^Change;
 	].
 
+`Dist-Inkt 0.003 cpan:TOBYINK`
+	issued  2013-08-10;
+	changeset [
+		item "Don't pass ExtUtils::MakeMaker the AUTHOR as an arrayref unless its version number >= 6.5702."^^Change;
+	].
+

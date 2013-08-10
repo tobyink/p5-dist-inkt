@@ -1,7 +1,7 @@
 package Dist::Inkt::Role::WriteREADME;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.002';
+our $VERSION   = '0.003';
 
 use Moose::Role;
 use Pod::Text;
