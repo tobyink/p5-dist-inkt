@@ -119,8 +119,8 @@ if ($EUMM >= 6.6303)
 }
 elsif ($EUMM >= 6.5503)
 {
-	$WriteMakefileArgs{BUILD_REQUIRES}     ||= deps('build');
-	$WriteMakefileArgs{CONFIGURE_REQUIRES} ||= deps('configure', 'test');
+	$WriteMakefileArgs{BUILD_REQUIRES}     ||= deps('build', 'test');
+	$WriteMakefileArgs{CONFIGURE_REQUIRES} ||= deps('configure');
 	$WriteMakefileArgs{PREREQ_PM}          ||= deps('runtime');	
 }
 elsif ($EUMM >= 6.52)
