@@ -20,4 +20,21 @@ sub _build_model
 	return 'RDF::Trine::Model'->temporary_model;
 }
 
+has doap_project => (
+	is       => 'ro',
+	isa      => InstanceOf['RDF::DOAP::Project'],
+	lazy     => 1,
+	builder  => '_build_doap_project',
+);
+
+sub _build_doap_project
+{
+	my $self = shift;
+	require RDF::DOAP::Project;
+	'RDF::DOAP::Project'->rdf_load(
+		$self->project_uri,
+		$self->model,
+	);
+}
+
 1;

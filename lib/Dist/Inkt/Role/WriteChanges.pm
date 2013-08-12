@@ -19,10 +19,8 @@ sub Build_Changes
 	my $self = shift;
 	my $file = $self->targetfile('Changes');
 	$file->exists and return $self->log('Skipping %s; it already exists', $file);
-	$self->log('Writing %s', $file);
-	
-	my $ch = 'RDF::DOAP::ChangeSets'->new($self->project_uri, $self->model);
-	$ch->to_file($file);
+	$self->log('Writing %s', $file);	
+	$file->spew_utf8($self->doap_project->changelog);
 }
 
 1;
