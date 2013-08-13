@@ -12,7 +12,7 @@ after PopulateMetadata => sub {
 	my $self = shift;
 	my %maint   = map +($_ => 1), $self->doap_project->gather_all_maintainers;
 	my @contrib = grep !$maint{$_}, $self->doap_project->gather_all_contributors;
-	push @{ $self->metadata->{x_contributors} ||= [] }, @contrib if @contrib;
+	push @{ $self->metadata->{x_contributors} ||= [] }, map "$_", @contrib if @contrib;
 };
 
 after BUILD => sub {
