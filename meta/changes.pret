@@ -25,3 +25,10 @@
 		item "For ExtUtils::MakeMaker versions that don't support BUILD_REQUIRES, bundle it in with PREREQ_PM, not CONFIGURE_REQUIRES."^^Change;
 	].
 
+`Dist-Inkt 0.005 cpan:TOBYINK`
+	issued  2013-08-13;
+	changeset [
+		item "Use the shiny, new RDF::DOAP for a lot of the behind-the-scenes DOAP processing."^^Update;
+		item "Support the `x_help_wanted` key for META.json/META.yml."^^Addition;
+	].
+

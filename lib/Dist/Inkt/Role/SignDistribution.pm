@@ -1,7 +1,7 @@
 package Dist::Inkt::Role::SignDistribution;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.004';
+our $VERSION   = '0.005';
 
 use Moose::Role;
 use Module::Signature ();
