@@ -32,3 +32,9 @@
 		item "Support the `x_help_wanted` key for META.json/META.yml."^^Addition;
 	].
 
+`Dist-Inkt 0.006 cpan:TOBYINK`
+	issued  2013-08-13;
+	changeset [
+		item "Guess some copyrights for the COPYRIGHT file."^^Change;
+	].
+
