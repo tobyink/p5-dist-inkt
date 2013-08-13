@@ -15,7 +15,7 @@
 	:runtime-requirement  [ :on "Moose 2.0800"^^:CpanId ];
 	:runtime-requirement  [ :on "Path::Iterator::Rule 0"^^:CpanId ];
 	:runtime-requirement  [ :on "Path::Tiny 0"^^:CpanId ];
-	:runtime-requirement  [ :on "RDF::DOAP::Project 0.003"^^:CpanId; :since `Dist-Inkt 0.005 cpan:TOBYINK` ];
+	:runtime-requirement  [ :on "RDF::DOAP::Project 0.005"^^:CpanId; :since `Dist-Inkt 0.005 cpan:TOBYINK` ];
 	:runtime-requirement  [ :on "RDF::Trine 1.000"^^:CpanId ];
 	:runtime-requirement  [ :on "RDF::TrineX::Functions 0"^^:CpanId ];
 	:runtime-requirement  [ :on "RDF::TrineX::Parser::Pretdsl 0"^^:CpanId ];
