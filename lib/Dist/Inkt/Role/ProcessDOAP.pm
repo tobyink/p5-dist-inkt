@@ -39,6 +39,12 @@ after PopulateMetadata => sub
 	$meta->{resources}{$_} ||= $r->{$_} for keys %$r;
 	
 	push @{ $meta->{keywords} }, $self->cpanmeta_keywords;
+	
+	for my $role ($self->model->objects(RDF::Trine::iri($self->project_uri), $CPAN->x_help_wanted))
+	{
+		next unless $role->uri =~ /(\w+)\z/;
+		push @{ $meta->{x_help_wanted} ||= [] }, $1;
+	}
 };
 
 sub cpanmeta_license_code
