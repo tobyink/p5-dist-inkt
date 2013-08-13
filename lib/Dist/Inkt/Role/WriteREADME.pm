@@ -31,7 +31,12 @@ sub Build_README
 	my $input = $self->lead_module;
 	$input =~ s{::}{/}g;
 	$input = $self->sourcefile("lib/$input.pm");
-	
+
+	# inherit rights from input pod
+	$self->rights_for_generated_files->{'README'} ||= [
+		$self->_determine_rights($input)
+	] if $self->DOES('Dist::Inkt::Role::WriteCOPYRIGHT');
+
 	$pod->parse_from_file("$input", "$file");
 }
 

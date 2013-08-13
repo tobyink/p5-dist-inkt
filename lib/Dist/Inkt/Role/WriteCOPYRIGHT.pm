@@ -109,6 +109,16 @@ has debian_copyright => (
 	builder  => '_build_debian_copyright',
 );
 
+has rights_for_generated_files => (
+	is       => 'ro',
+	isa      => HashRef[ArrayRef],
+	default  => sub {
+		+{
+			COPYRIGHT => [ 'None' => 'public-domain' ],
+		};
+	},
+);
+
 our @Licences;
 sub _build_debian_copyright
 {
@@ -125,7 +135,7 @@ sub _build_debian_copyright
 		HeaderSection->new(
 			format           => FORMAT_URI,
 			upstream_name    => $self->name,
-			upstream_contact => $self->metadata->{author}[0],   # XXX
+			upstream_contact => Moose::Util::english_list(@{$self->metadata->{author}}),
 			source           => $self->metadata->{resources}{homepage},
 		),
 	);
@@ -211,6 +221,31 @@ sub _handle_file
 	return ($f, $copyright, $licence_name, $comment);
 }
 
+sub _inherited_rights
+{
+	my ($self, $f) = @_;
+	
+	my $holders = Moose::Util::english_list(
+		map $_->to_string('compact'), @{$self->doap_project->maintainer}
+	);
+	
+	my $year = 1900 + (localtime)[5];
+	$year = 1900 + (localtime((stat $f)[9]))[5] if $f;
+	
+	for my $l (@{ $self->doap_project->license })
+	{
+		next unless exists $URIS{ $l->uri };
+		my $class = "Software::License::".$URIS{$l->uri};
+		
+		return (
+			sprintf("Copyright %d %s.", $year, $holders),
+			$class->new({ holder => $holders, year => $year }),
+		);
+	}
+	
+	return;
+}
+
 sub _determine_rights
 {
 	my ($self, $f) = @_;
@@ -225,11 +260,21 @@ sub _determine_rights
 		return @rights;
 	}
 	
-	if (my @rights = $self->_determine_rights_by_convention($f))
+	if (my @rights = @{ $self->rights_for_generated_files->{$f} || [] })
 	{
 		return @rights;
 	}
 	
+	if ($f =~ m{\Alib/.*\.pm\z}
+	or  $f =~ m{\Abin/[\w_-]+(\.pl|\.PL)?\z}
+	or  $f =~ m{\At/.*(\.pm|\.t)\z}
+	or  $f eq 'dist.ini')
+	{
+		$self->log("Guessing copyright for file $f");
+		return $self->_inherited_rights($f);
+	}
+	
+	$self->log("WARNING: Unable to determine copyright for file $f");
 	return;
 }
 
@@ -299,61 +344,6 @@ sub _determine_rights_from_pod
 	return;
 }
 
-sub _determine_rights_by_convention
-{
-	my ($self, $f) = @_;
-	
-	if ($f =~ /^COPYRIGHT$/)
-	{
-		return(
-			'None',
-			'public-domain',
-			'This file! Automatically generated.',
-		);
-	}
-	
-	if ($f =~ m{ inc/Module/Install/(
-		Admin | Admin/Include | Base | Bundle | Can | Compiler | Deprecated |
-		External | Makefile | PAR | Share | DSL | Admin/Bundle |
-		Admin/Compiler | Admin/Find | Admin/Makefile | Admin/Manifest |
-		Admin/Metadata | Admin/ScanDeps | Admin/WriteAll | AutoInstall |
-		Base/FakeAdmin | Fetch | Include | Inline | MakeMaker | Metadata |
-		Run | Scripts | Win32 | With | WriteAll
-	).pm }x or $f eq 'inc/Module/Install.pm')
-	{
-		return(
-			'Copyright 2002 - 2012 Brian Ingerson, Audrey Tang and Adam Kennedy.',
-			"Software::License::Perl_5"->new({ holder => 'the copyright holder(s)' }),
-		);
-	}
-	
-	if ($f eq 'inc/Module/Install/Package.pm')
-	{
-		return(
-			'Copyright (c) 2011. Ingy doet Net.',
-			"Software::License::Perl_5"->new({ holder => 'the copyright holder(s)' }),
-		);
-	}
-
-	if ($f eq 'inc/Module/Package/Dist/RDF.pm')
-	{
-		return(
-			'This software is copyright (c) 2011-2012 by Toby Inkster.',
-			"Software::License::Perl_5"->new({ holder => 'the copyright holder(s)' }),
-		);
-	}
-
-	if ($f eq 'inc/unicore/Name.pm' or $f eq 'inc/utf8.pm')
-	{
-		return(
-			'1993-2012, Larry Wall and others',
-			"Software::License::Perl_5"->new({ holder => 'the copyright holder(s)' }),
-		);
-	}
-
-	return;
-}
-
 after BUILD => sub {
 	my $self = shift;
 	push @{ $self->targets }, 'COPYRIGHT'; # push rather than shift
@@ -365,6 +355,9 @@ sub Build_COPYRIGHT
 	my $file = $self->targetfile('COPYRIGHT');
 	$file->exists and return $self->log('Skipping %s; it already exists', $file);
 	$self->log('Writing %s', $file);
+	$self->rights_for_generated_files->{'COPYRIGHT'} ||= [
+		'None', 'public-domain'
+	] if $self->DOES('Dist::Inkt::Role::WriteCOPYRIGHT');
 	
 	$file->spew_utf8( $self->debian_copyright->to_string );
 }

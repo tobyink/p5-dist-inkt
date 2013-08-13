@@ -164,6 +164,9 @@ sub BuildManifest
 	
 	my $file = $self->targetfile('MANIFEST');
 	$self->log("Writing $file");
+	$self->rights_for_generated_files->{'MANIFEST'} ||= [
+		'None', 'public-domain'
+	] if $self->DOES('Dist::Inkt::Role::WriteCOPYRIGHT');
 	
 	my $rule = 'Path::Iterator::Rule'->new->file;
 	my $root = $self->targetdir;

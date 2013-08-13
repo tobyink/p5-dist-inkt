@@ -30,6 +30,9 @@ sub Build_CREDITS
 	my $file = $self->targetfile('CREDITS');
 	$file->exists and return $self->log('Skipping %s; it already exists', $file);
 	$self->log('Writing %s', $file);
+	$self->rights_for_generated_files->{'CREDITS'} ||= [
+		'None', 'public-domain'
+	] if $self->DOES('Dist::Inkt::Role::WriteCOPYRIGHT');
 	
 	my $fh = $file->openw_utf8;
 	

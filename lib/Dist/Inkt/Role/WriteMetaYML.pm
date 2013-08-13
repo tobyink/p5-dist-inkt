@@ -17,6 +17,9 @@ sub Build_MetaYML
 	my $file = $self->targetfile('META.yml');
 	$file->exists and return $self->log('Skipping %s; it already exists', $file);
 	$self->log('Writing %s', $file);
+	$self->rights_for_generated_files->{'META.yml'} ||= [
+		$self->_inherited_rights
+	] if $self->DOES('Dist::Inkt::Role::WriteCOPYRIGHT');
 	$self->metadata->save($file, { version => '1.4' });
 }
 

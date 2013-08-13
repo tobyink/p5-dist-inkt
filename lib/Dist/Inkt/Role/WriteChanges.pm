@@ -20,6 +20,9 @@ sub Build_Changes
 	my $file = $self->targetfile('Changes');
 	$file->exists and return $self->log('Skipping %s; it already exists', $file);
 	$self->log('Writing %s', $file);
+	$self->rights_for_generated_files->{'Changes'} ||= [
+		$self->_inherited_rights
+	] if $self->DOES('Dist::Inkt::Role::WriteCOPYRIGHT');
 	$file->spew_utf8($self->doap_project->changelog);
 }
 

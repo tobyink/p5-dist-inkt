@@ -55,7 +55,12 @@ sub Build_MakefilePL
 		my $dc = $self->sourcefile(DYNAMIC_CONFIG_PATH);
 		$dc->exists ? "\ndo {\n${\ $dc->slurp_utf8 }\n};" : '';
 	};
-	
+
+	$self->rights_for_generated_files->{'Makefile.PL'} ||= [
+		'Copyright 2013 Toby Inkster.',
+		"Software::License::Perl_5"->new({ holder => 'Toby Inkster', year => '2013' }),
+	] if $self->DOES('Dist::Inkt::Role::WriteCOPYRIGHT') && !$dynamic_config;
+
 	my $share = '';
 	if ($self->has_shared_files)
 	{
