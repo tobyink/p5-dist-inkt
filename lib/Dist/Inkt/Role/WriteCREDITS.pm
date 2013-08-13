@@ -10,8 +10,12 @@ with 'Dist::Inkt::Role::RDFModel';
 
 after PopulateMetadata => sub {
 	my $self = shift;
-	my %maint   = map +($_ => 1), $self->doap_project->gather_all_maintainers;
-	my @contrib = grep !$maint{$_}, $self->doap_project->gather_all_contributors;
+	
+	my @maint = $self->doap_project->gather_all_maintainters;
+	push @{ $self->metadata->{author} ||= [] }, map "$_", @maint if @maint;
+	
+	my %already = map +($_ => 1), @maint;
+	my @contrib = grep !$already{$_}, $self->doap_project->gather_all_contributors;
 	push @{ $self->metadata->{x_contributors} ||= [] }, map "$_", @contrib if @contrib;
 };
 
