@@ -11,7 +11,7 @@ with 'Dist::Inkt::Role::RDFModel';
 after PopulateMetadata => sub {
 	my $self = shift;
 	
-	my @maint = $self->doap_project->gather_all_maintainters;
+	my @maint = $self->doap_project->gather_all_maintainers;
 	push @{ $self->metadata->{author} ||= [] }, map "$_", @maint if @maint;
 	
 	my %already = map +($_ => 1), @maint;
