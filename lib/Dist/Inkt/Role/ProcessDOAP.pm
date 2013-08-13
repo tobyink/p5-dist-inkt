@@ -4,18 +4,19 @@ our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.004';
 
 use Moose::Role;
+use List::MoreUtils 'uniq';
 use namespace::autoclean;
 
 with 'Dist::Inkt::Role::RDFModel';
 
 use RDF::Trine::Namespace qw[RDF RDFS OWL XSD];
-my $CPAN = RDF::Trine::Namespace->new('http://purl.org/NET/cpan-uri/terms#');
-my $DC   = RDF::Trine::Namespace->new('http://purl.org/dc/terms/');
-my $DOAP = RDF::Trine::Namespace->new('http://usefulinc.com/ns/doap#');
-my $DEPS = RDF::Trine::Namespace->new('http://ontologi.es/doap-deps#');
-my $FOAF = RDF::Trine::Namespace->new('http://xmlns.com/foaf/0.1/');
-my $NFO  = RDF::Trine::Namespace->new('http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#');
-my $SKOS = RDF::Trine::Namespace->new('http://www.w3.org/2004/02/skos/core#');
+my $CPAN = 'RDF::Trine::Namespace'->new('http://purl.org/NET/cpan-uri/terms#');
+my $DC   = 'RDF::Trine::Namespace'->new('http://purl.org/dc/terms/');
+my $DOAP = 'RDF::Trine::Namespace'->new('http://usefulinc.com/ns/doap#');
+my $DEPS = 'RDF::Trine::Namespace'->new('http://ontologi.es/doap-deps#');
+my $FOAF = 'RDF::Trine::Namespace'->new('http://xmlns.com/foaf/0.1/');
+my $NFO  = 'RDF::Trine::Namespace'->new('http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#');
+my $SKOS = 'RDF::Trine::Namespace'->new('http://www.w3.org/2004/02/skos/core#');
 
 after PopulateMetadata => sub
 {
@@ -23,54 +24,30 @@ after PopulateMetadata => sub
 	
 	$self->log('Processing the DOAP vocabulary');
 	
-	my $meta  = $self->metadata;
+	my $meta = $self->metadata;
 	
-	$meta->{abstract}    = $_ for $self->doap_shortdesc;
-	$meta->{description} = $_ for $self->doap_description;
+	delete $meta->{abstract} if $meta->{abstract} eq 'unknown';
+	$meta->{abstract} ||= $_
+		for grep defined, $self->doap_project->shortdesc;
+		
+	$meta->{description} ||= $_
+		for grep defined, $self->doap_project->description;
 	
-	push @{ $meta->{license} }, $self->doap_license;
+	push @{ $meta->{license} }, $self->cpanmeta_license_code;
 	
-	my $r = $self->doap_resources;
+	my $r = $self->cpanmeta_resources;
 	$meta->{resources}{$_} ||= $r->{$_} for keys %$r;
 	
-	push @{ $meta->{keywords} }, $self->doap_category;
+	push @{ $meta->{keywords} }, $self->cpanmeta_keywords;
 };
 
-sub doap_shortdesc
-{
-	shift->_doap_single_literal($DOAP->shortdesc, $DC->abstract);
-}
-
-sub doap_description
-{
-	shift->_doap_single_literal($DOAP->description, $DC->description);
-}
-
-sub _doap_single_literal
+sub cpanmeta_license_code
 {
 	my $self = shift;
-	my $model = $self->model;
-	my $uri   = 'RDF::Trine::Node::Resource'->new($self->project_uri);
-	
-	for ($model->objects_for_predicate_list($uri, @_))
-	{
-		return $_->literal_value if $_->is_literal;
-	}
-	
-	return;
-}
-
-sub doap_license
-{
-	my $self = shift;
-	my $model = $self->model;
-	my $uri   = 'RDF::Trine::Node::Resource'->new($self->project_uri);
 
 	my @r;
-	for ($model->objects_for_predicate_list($uri, $DOAP->license, $DC->license))
+	for (@{ $self->doap_project->license })
 	{
-		next unless $_->is_resource;
-		
 		my $license_code = {
 			'http://www.gnu.org/licenses/agpl-3.0.txt'              => 'open_source',
 			'http://www.apache.org/licenses/LICENSE-1.1'            => 'apache_1_1',
@@ -111,32 +88,19 @@ sub doap_license
 		push @r, $license_code if $license_code;
 	}
 	
-	return @r;
+	@r ? uniq(@r) : ('unknown');
 }
 
-sub doap_resources
+sub cpanmeta_resources
 {
 	my $self = shift;
-	my $model = $self->model;
-	my $uri   = 'RDF::Trine::Node::Resource'->new($self->project_uri);
 
 	my %resources;
 	
-	$resources{license} = [
-		map  { $_->uri }
-		grep { $_->is_resource }
-		$model->objects_for_predicate_list($uri, $DOAP->license, $DC->license)
-	];
+	$resources{license}    = [ map $_->uri, @{ $self->doap_project->license } ];
+	$resources{homepage} ||= $_->uri for @{ $self->doap_project->homepage };
 	
-	($resources{homepage}) =
-		map  { $_->uri }
-		grep { $_->is_resource }
-		$model->objects_for_predicate_list($uri, $DOAP->homepage, $FOAF->homepage, $FOAF->page);
-	
-	my (@bug) =
-		map  { $_->uri }
-		grep { $_->is_resource }
-		$model->objects($uri, $DOAP->uri('bug-database'));
+	my (@bug) = map $_->uri, $self->doap_project->bug_database;
 	for (@bug) {
 		if (/^mailto:(.+)/i) {
 			$resources{bugtracker}{mailto} ||= $1;
@@ -146,70 +110,54 @@ sub doap_resources
 		}
 	}
 	
-	REPO: foreach my $repo ($model->objects($uri, $DOAP->repository))
+	REPO: for my $repo (@{$self->doap_project->repository})
 	{
-		next REPO if $repo->is_literal;
-		
-		my ($browse) =
-			map  { $_->uri }
-			grep { $_->is_resource }
-			$model->objects_for_predicate_list($repo, $DOAP->uri('browse'));
-		my ($location) =
-			map  { $_->uri }
-			grep { $_->is_resource }
-			$model->objects_for_predicate_list($repo, $DOAP->uri('location'));
-		my ($type) =
-			map  { $_->uri }
-			grep { $_->is_resource }
-			$model->objects_for_predicate_list($repo, $RDF->uri('type'));
-		
-		if ($location || $browse)
+		if ($repo->location || $repo->browse)
 		{
-			my $repo = {};
-			$repo->{url}  = $location if $location;
-			$repo->{web}  = $browse if $browse;
-			$repo->{type} = lc($1) if "$type" =~ m{(\w+)Repository$};
-			$resources{repository} = $repo;
+			my $r = {};
+			$r->{url}  = $repo->location->uri if $repo->location;
+			$r->{web}  = $repo->browse->uri   if $repo->browse;
+			for my $type (@{ $repo->rdf_type || [] }) {
+				$r->{type} ||= lc($1) if $type->uri =~ m{[/#](\w+)Repository$};
+			}
+			$resources{repository} = $r;
 			last REPO;
 		}
 	}
 	
 	($resources{X_mailinglist}) =
 		map  { $_->uri }
-		grep { $_->is_resource }
-		$model->objects($uri, $DOAP->uri('mailing-list'));
+		grep defined,
+		$self->doap_project->mailing_list;
 	
 	($resources{X_wiki}) =
 		map  { $_->uri }
-		grep { $_->is_resource }
-		$model->objects($uri, $DOAP->uri('wiki'));
-	
+		grep defined,
+		$self->doap_project->wiki;
+
+	($resources{X_identifier}) =
+		map  { $_->uri }
+		grep defined,
+		$self->doap_project->rdf_about;
+
 	delete $resources{$_} for grep !defined $resources{$_}, keys %resources;
 	
 	return \%resources;
 }
 
-sub doap_category
+sub cpanmeta_keywords
 {
 	my $self = shift;
 	my $model = $self->model;
-	my $uri   = 'RDF::Trine::Node::Resource'->new($self->project_uri);
 	
 	my %keywords;
-	CATEGORY: foreach my $cat ($model->objects_for_predicate_list($uri, $DOAP->category, $DC->subject))
+	CATEGORY: for my $cat (@{ $self->doap_project->category || [] })
 	{
-		if ($cat->is_literal)
+		LABEL: for my $label ($model->objects_for_predicate_list($cat, $SKOS->prefLabel, $RDFS->label, $DOAP->name, $FOAF->name))
 		{
-			$keywords{ uc $cat->literal_value } = $cat->literal_value;
-		}
-		else
-		{
-			LABEL: foreach my $label ($model->objects_for_predicate_list($cat, $SKOS->prefLabel, $RDFS->label, $DOAP->name, $FOAF->name))
-			{
-				next LABEL unless $label->is_literal;
-				$keywords{ uc $label->literal_value } = $label->literal_value;
-				next CATEGORY;
-			}
+			next LABEL unless $label->is_literal;
+			$keywords{ uc $label->literal_value } = $label->literal_value;
+			next CATEGORY;
 		}
 	}
 	
