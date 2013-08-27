@@ -88,13 +88,35 @@ my $meta = %%%METADATA%%%;
 
 my %dynamic_config;%%%DYNAMIC_CONFIG%%%
 
+my %all_conflicts;
+for my $stage (keys %{$meta->{prereqs}})
+{
+	my $conflicts = $meta->{prereqs}{$stage}{conflicts} or next;
+	while (my ($module, $version) = each %$conflicts)
+	{
+		eval "require $module" or next;
+		my $installed = eval(sprintf('$%s::VERSION', $module));
+		next if $installed gt $version;
+		$all_conflicts{$module} = 1;
+		warn <<"MESSAGE";
+
+** This version of $meta->{name} conflicts with the version of
+** module $module ($installed) you have installed.
+** 
+** It's strongly recommended that you update it after
+** installing this version of $meta->{name}.
+
+MESSAGE
+	}
+}
+
 my %WriteMakefileArgs = (
-	ABSTRACT           => $meta->{abstract},
-	AUTHOR             => ($EUMM >= 6.5702 ? $meta->{author} : $meta->{author}[0]),
-	DISTNAME           => $meta->{name},
-	VERSION            => $meta->{version},
-	EXE_FILES          => [ map $_->{file}, values %{ $meta->{x_provides_scripts} || {} } ],
-	NAME               => do { my $n = $meta->{name}; $n =~ s/-/::/g; $n },
+	ABSTRACT   => $meta->{abstract},
+	AUTHOR     => ($EUMM >= 6.5702 ? $meta->{author} : $meta->{author}[0]),
+	DISTNAME   => $meta->{name},
+	VERSION    => $meta->{version},
+	EXE_FILES  => [ map $_->{file}, values %{ $meta->{x_provides_scripts} || {} } ],
+	NAME       => do { my $n = $meta->{name}; $n =~ s/-/::/g; $n },
 	%dynamic_config,
 );
 
