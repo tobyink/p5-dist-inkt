@@ -38,3 +38,9 @@
 		item "Guess some copyrights for the COPYRIGHT file."^^Change;
 	].
 
+`Dist-Inkt 0.007 cpan:TOBYINK`
+	issued  2013-08-27;
+	changeset [
+		item "Rename META.ttl -> doap.ttl."^^Change;
+	].
+
