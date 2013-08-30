@@ -118,6 +118,11 @@ sub doap_deps
 					$ver ||= 0;
 					no warnings;
 					$Reqs->add_string_requirement($mod => $ver);
+					
+					if ($phase eq 'runtime' and $level eq 'conflict' and $ver =~ m{\A<= (v?[0-9_.]+)\z})
+					{
+						$meta->{x_breaks}{$mod} = $1;
+					}
 				}
 			}
 			

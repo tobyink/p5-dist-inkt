@@ -203,7 +203,7 @@ sub BuildAll
 	$self->BuildTargets;
 	$self->BuildManifest;
 	$self->BuildTarball;
-#	$self->cleartarget;
+	$self->cleartarget;
 }
 
 sub log
