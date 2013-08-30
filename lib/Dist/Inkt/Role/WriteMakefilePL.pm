@@ -110,17 +110,19 @@ for my $stage (keys %{$meta->{prereqs}})
 	for my $module ($conflicts->required_modules)
 	{
 		eval "require $module" or next;
-		my $installed = eval(sprintf('$%s::VERSION', $module));
+		my $installed = eval(sprintf('$%s::VERSION', $module));		
+		$conflicts->accepts_module($module, $installed) or next;
 		
-		$conflicts->accepts_module($module, $installed) and warn <<"MESSAGE";
-
-** This version of $meta->{name} conflicts with the version of
-** module $module ($installed) you have installed.
-** 
-** It's strongly recommended that you update it after
-** installing this version of $meta->{name}.
-
-MESSAGE
+		my $message = "\n".
+			"** This version of $meta->{name} conflicts with the version of\n".
+			"** module $module ($installed) you have installed.\n";
+		die($message . "\n" . "Bailing out")
+			if $stage eq 'build' || $stage eq 'configure';
+		
+		$message .= "**\n".
+			"** It's strongly recommended that you update it after\n".
+			"** installing this version of $meta->{name}.\n";
+		warn("$message\n");
 	}
 }
 CODE
