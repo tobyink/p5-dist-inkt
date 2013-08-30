@@ -15,7 +15,7 @@ after PopulateMetadata => sub
 	my $src = $self->sourcefile;
 	
 	### XXX - should filter by manifest_skip
-	$self->metadata->{x_provides_scripts} = +{
+	my %script = (
 		map {
 			my $path = path($_);
 			$path->basename => { file => $path->relative($src) };
@@ -30,7 +30,9 @@ after PopulateMetadata => sub
 			$src->child('bin'),
 			$src->child('script'),
 		),
-	};
+	);
+	
+	$self->metadata->{x_provides_scripts} = \%scripts if scalar keys %scripts;
 };
 
 1;
