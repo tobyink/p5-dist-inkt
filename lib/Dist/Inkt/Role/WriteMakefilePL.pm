@@ -110,7 +110,7 @@ for my $stage (keys %{$meta->{prereqs}})
 	for my $module ($conflicts->required_modules)
 	{
 		eval "require $module" or next;
-		my $installed = eval(sprintf('$%s::VERSION', $module));		
+		my $installed = eval(sprintf('$%s::VERSION', $module));
 		$conflicts->accepts_module($module, $installed) or next;
 		
 		my $message = "\n".
@@ -134,7 +134,7 @@ __DATA__
 use strict;
 use ExtUtils::MakeMaker 6.17;
 
-my $EUMM = 'ExtUtils::MakeMaker'->VERSION;
+my $EUMM = eval( $ExtUtils::MakeMaker::VERSION );
 
 my $meta = %%%METADATA%%%;
 
@@ -150,7 +150,7 @@ my %WriteMakefileArgs = (
 	%dynamic_config,
 );
 
-$WriteMakefileArgs{LICENSE} => $meta->{license}[0] if $EUMM >= 6.3001;
+$WriteMakefileArgs{LICENSE} = $meta->{license}[0] if $EUMM >= 6.3001;
 
 sub deps
 {
