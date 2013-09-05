@@ -15,7 +15,7 @@ after PopulateMetadata => sub
 	my $src = $self->sourcefile;
 	
 	### XXX - should filter by manifest_skip
-	my %script = (
+	my %scripts = (
 		map {
 			my $path = path($_);
 			$path->basename => { file => $path->relative($src) };

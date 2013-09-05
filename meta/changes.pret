@@ -67,5 +67,9 @@
 			label "Make sure EUMM $VERSION gets evaled.";
 			dcs:thanks cpan:HAARG;
 		];
+		item [
+			a dcs:Bugfix;
+			label "Correct %script to %scripts in Dist::Inkt::Role::MetaProvidesScripts.";
+		];
 	].
 
