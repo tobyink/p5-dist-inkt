@@ -1,7 +1,7 @@
 package Dist::Inkt::Role::WriteCREDITS;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.007';
+our $VERSION   = '0.008';
 
 use Moose::Role;
 use namespace::autoclean;

@@ -44,3 +44,13 @@
 		item "Rename META.ttl -> doap.ttl."^^Change;
 	].
 
+`Dist-Inkt 0.008 cpan:TOBYINK`
+	issued  2013-09-06;
+	changeset [
+		item "Perform conflicts checking in Makefile.PL."^^Change;
+		item "Add `x_breaks` key to META.json if appropriate."^^Change;
+		item "Don't add `x_provides_scripts` to META.json unless scripts are actually provided."^^Change;
+		item "Allow `source_for_readme` to be set in Dist::Inkt constructor (and thus in dist.ini)."^^Change;
+		item "Depend on a newer version of RDF::DOAP, thus we get more awesome Changes files."^^Packaging;
+	].
+

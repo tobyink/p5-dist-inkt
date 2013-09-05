@@ -1,7 +1,7 @@
 package Dist::Inkt::Profile::TOBYINK;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.007';
+our $VERSION   = '0.008';
 
 use Moose;
 
@@ -11,8 +11,8 @@ with qw(
 	Dist::Inkt::Role::ReadMetaDir
 	Dist::Inkt::Role::ProcessDOAP
 	Dist::Inkt::Role::ProcessDOAPDeps
-	Dist::Inkt::Role::CopyFiles
 	Dist::Inkt::Role::CopyStandardDocuments
+	Dist::Inkt::Role::CopyFiles
 	Dist::Inkt::Role::MetaProvides
 	Dist::Inkt::Role::MetaProvidesScripts
 	Dist::Inkt::Role::WriteMakefilePL
