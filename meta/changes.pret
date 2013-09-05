@@ -54,3 +54,18 @@
 		item "Depend on a newer version of RDF::DOAP, thus we get more awesome Changes files."^^Packaging;
 	].
 
+`Dist-Inkt 0.009 cpan:TOBYINK`
+	issued  2013-09-06;
+	changeset [
+		item [
+			a dcs:Bugfix;
+			label "Replace => with = in assignment in Makefile.PL.";
+			dcs:thanks cpan:HAARG;
+		];
+		item [
+			a dcs:Bugfix;
+			label "Make sure EUMM $VERSION gets evaled.";
+			dcs:thanks cpan:HAARG;
+		];
+	].
+
