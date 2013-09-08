@@ -40,6 +40,19 @@ sub _build_needs_conflict_check_code
 	} qw( configure build runtime test develop );
 }
 
+has needs_optional_features_code => (
+	is      => 'ro',
+	isa     => Bool,
+	lazy    => 1,
+	builder => '_build_needs_optional_features_code',
+);
+
+sub _build_needs_optional_features_code
+{
+	my $self = shift;
+	!! %{ $self->metadata->{optional_features} };
+}
+
 after PopulateMetadata => sub {
 	my $self = shift;
 	$self->metadata->{prereqs}{configure}{requires}{'ExtUtils::MakeMaker'} = '6.17'
@@ -51,6 +64,8 @@ after PopulateMetadata => sub {
 		if $self->needs_conflict_check_code;
 	$self->metadata->{dynamic_config} = 1
 		if $self->sourcefile(DYNAMIC_CONFIG_PATH)->exists;
+	$self->metadata->{dynamic_config} = 1
+		if $self->needs_optional_features_code;
 };
 
 after BUILD => sub {
@@ -89,12 +104,14 @@ sub Build_MakefilePL
 	}
 	
 	my $conflict_check = $self->needs_conflict_check_code ? $self->conflict_check_code : '';
+	my $optional_features = $self->needs_optional_features_code ? $self->optional_features_code : '';
 	
 	my $makefile = do { local $/ = <DATA> };
 	$makefile =~ s/%%%METADATA%%%/$dump/;
 	$makefile =~ s/%%%SHARE%%%/$share/;
 	$makefile =~ s/%%%DYNAMIC_CONFIG%%%/$dynamic_config/;
 	$makefile =~ s/%%%CONFLICT_CHECK%%%/$conflict_check/;
+	$makefile =~ s/%%%OPTIONAL_FEATURES%%%/$optional_features/;
 	$file->spew_utf8($makefile);
 }
 
@@ -128,6 +145,51 @@ for my $stage (keys %{$meta->{prereqs}})
 CODE
 }
 
+sub optional_features_code
+{
+	<<'CODE'
+
+if ($ENV{MM_INSTALL_FEATURES})
+{
+	my %features = %{ $meta->{optional_features} };
+	my @features = sort {
+		$features{$b}{x_default} <=> $features{$a}{x_default} or $a cmp $b
+	} keys %features;
+	
+	for my $feature_id (@features)
+	{
+		my %feature = %{ $features{$feature_id} };
+		
+		next unless prompt(
+			sprintf('Install %s (%s)?', $feature_id, $feature{description} || 'no description'),
+			$feature{x_default} ? 'Y' : 'N',
+		) =~ /^Y/i;
+		
+		for my $stage (keys %{$feature{prereqs}})
+		{
+			for my $level (keys %{$feature{prereqs}{$stage}})
+			{
+				for my $module (keys %{$feature{prereqs}{$stage}{$level}})
+				{
+					$meta->{prereqs}{$stage}{$level}{$module}
+						= $feature{prereqs}{$stage}{$level}{$module};
+				}
+			}
+		}
+	}
+}
+else
+{
+	print <<'MM_INSTALL_FEATURES';
+
+** Setting the MM_INSTALL_FEATURES environment variable to true
+** would allow you to choose additional features.
+
+MM_INSTALL_FEATURES
+}
+CODE
+}
+
 1;
 
 __DATA__
@@ -137,7 +199,7 @@ use ExtUtils::MakeMaker 6.17;
 my $EUMM = eval( $ExtUtils::MakeMaker::VERSION );
 
 my $meta = %%%METADATA%%%;
-
+%%%OPTIONAL_FEATURES%%%
 my %dynamic_config;%%%DYNAMIC_CONFIG%%%
 %%%CONFLICT_CHECK%%%
 my %WriteMakefileArgs = (
