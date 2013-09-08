@@ -202,8 +202,8 @@ sub BuildAll
 	my $self = shift;
 	$self->BuildTargets;
 	$self->BuildManifest;
-	$self->BuildTarball;
-	$self->cleartarget;
+	$self->BuildTarball unless $ENV{PERL_DIST_INKT_NOTARBALL};
+	$self->cleartarget unless $ENV{PERL_DIST_INKT_KEEPDIR};
 }
 
 sub log
