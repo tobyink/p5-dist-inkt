@@ -25,6 +25,7 @@ after PopulateMetadata => sub
 	
 	$self->cpanterms_deps;
 	$self->doap_deps;
+	$self->doap_deps_features;
 };
 
 
@@ -129,6 +130,88 @@ sub doap_deps
 			$meta->{prereqs}{$phase}{$level2} = $Reqs->as_string_hash if $Reqs;
 		}
 	}
+}
+
+sub doap_deps_features
+{
+	my $self = shift;
+	
+	my $meta  = $self->metadata;
+	my $model = $self->model;
+	my $uri   = 'RDF::Trine::Node::Resource'->new($self->project_uri);
+	
+	my %F;
+	
+	foreach my $feature ($model->objects($uri, $DEPS->feature))
+	{
+		my %f;
+		
+		my ($label) =
+			map $_->literal_value,
+			grep $_->is_literal,
+			$model->objects($feature, $DOAP->name);
+		my ($desc) =
+			map $_->literal_value,
+			grep $_->is_literal,
+			$model->objects($feature, $DOAP->shortdesc);
+		my ($default) =
+			map $_->literal_value,
+			grep $_->is_literal,
+			$model->objects($feature, $DEPS->x_default);
+		
+		die "Feature defined with no name: $feature" unless defined $label;
+		$f{description} = $desc if defined $desc;
+		$f{x_default}   = 0+!!(  lc($default||'') eq 'true'  );
+		
+		foreach my $phase (qw/ configure build test runtime develop /)
+		{
+			foreach my $level (qw/ requirement recommendation suggestion conflict /)
+			{
+				my $Reqs;
+				
+				my $term = "${phase}-${level}";
+				my $level2 = {
+					requirement    => 'requires',
+					recommendation => 'recommends',
+					suggestion     => 'suggests',
+					conflict       => 'conflicts',
+				}->{$level};
+				
+				foreach my $dep ( $model->objects($feature, $DEPS->uri($term)) )
+				{
+					$Reqs ||= 'CPAN::Meta::Requirements'->from_string_hash($meta->{prereqs}{$phase}{$level2} || {});
+					
+					if ($dep->is_literal)
+					{
+						$self->log("WARNING: ". $DEPS->$term . " expects a resource, not literal $dep!");
+						next;
+					}
+					
+					foreach my $ident ( $model->objects($dep, $DEPS->on) )
+					{
+						unless ($ident->is_literal
+						and     $ident->has_datatype
+						and     $ident->literal_datatype eq $DEPS->CpanId->uri)
+						{
+							$self->log("WARNING: Dunno what to do with ${ident}... we'll figure something out eventually.");
+							next;
+						}
+						
+						my ($mod, $ver) = split /\s+/, $ident->literal_value, 2;
+						$ver ||= 0;
+						no warnings;
+						$Reqs->add_string_requirement($mod => $ver);
+					}
+				}
+				
+				$f{prereqs}{$phase}{$level2} = $Reqs->as_string_hash if $Reqs;
+			}
+		}
+		
+		$F{$label} = \%f;
+	}
+	
+	$meta->{optional_features} = \%F;
 }
 
 1;
