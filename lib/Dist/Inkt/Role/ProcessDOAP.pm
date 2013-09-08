@@ -116,7 +116,7 @@ sub cpanmeta_resources
 		}
 	}
 	
-	REPO: for my $repo (@{$self->doap_project->repository})
+	REPO: for my $repo (@{$self->doap_project->repository || []})
 	{
 		if ($repo->location || $repo->browse)
 		{
