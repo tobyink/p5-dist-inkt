@@ -165,6 +165,8 @@ if ($ENV{MM_INSTALL_FEATURES})
 			$feature{x_default} ? 'Y' : 'N',
 		) =~ /^Y/i;
 		
+		$features{$feature_id}{x_selected} = 1;
+		
 		for my $stage (keys %{$feature{prereqs}})
 		{
 			for my $level (keys %{$feature{prereqs}{$stage}})
