@@ -79,5 +79,6 @@
 		item "Support `feature` property from DOAP deps."^^Update;
 		item "Output optional_features in META.json."^^Addition;
 		item "Use dynamic config in Makefile.PL to add dependencies for optional features."^^Addition;
+		item "Output an INSTALL file."^^Addition;
 	].
 
