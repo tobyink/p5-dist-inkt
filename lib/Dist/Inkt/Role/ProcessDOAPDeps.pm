@@ -179,7 +179,7 @@ sub doap_deps_features
 				
 				foreach my $dep ( $model->objects($feature, $DEPS->uri($term)) )
 				{
-					$Reqs ||= 'CPAN::Meta::Requirements'->from_string_hash($meta->{prereqs}{$phase}{$level2} || {});
+					$Reqs ||= 'CPAN::Meta::Requirements'->from_string_hash($meta->{optional_features}{$label}{$phase}{$level2} || {});
 					
 					if ($dep->is_literal)
 					{
