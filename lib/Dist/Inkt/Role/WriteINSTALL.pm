@@ -1,7 +1,7 @@
 package Dist::Inkt::Role::WriteINSTALL;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.010';
+our $VERSION   = '0.011';
 
 use Moose::Role;
 use namespace::autoclean;

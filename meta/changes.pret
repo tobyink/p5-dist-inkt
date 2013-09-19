@@ -82,3 +82,9 @@
 		item "Output an INSTALL file."^^Addition;
 	].
 
+`Dist-Inkt 0.011 cpan:TOBYINK`
+	issued  2013-09-19;
+	changeset [
+		item "META.json/yml license codes now conform to CPAN::Meta::Spec 2.0 instead of META-spec 1.4."^^Bugfix;
+	].
+
