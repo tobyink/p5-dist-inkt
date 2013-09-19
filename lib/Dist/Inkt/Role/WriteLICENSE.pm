@@ -29,6 +29,8 @@ sub Build_LICENSE
 		return;
 	}
 	
+	# XXX - guess_license_from_meta is absolute shite
+	# Stop using it here and in RDF::DOAP::Lite
 	my ($class) = 'Software::LicenseUtils'->guess_license_from_meta("license: '$L->[0]'\n");
 	unless ($class)
 	{
