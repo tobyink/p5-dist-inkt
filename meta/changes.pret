@@ -94,3 +94,9 @@
 		item "Generating LICENSE files now understands CPAN::Meta::Spec 2.0 license codes."^^Bugfix;
 	].
 
+`Dist-Inkt 0.013 cpan:TOBYINK`
+	issued  2013-09-22;
+	changeset [
+		item "Generated Makefile.PL performs a better check for minimum Perl version."^^Change;
+	].
+

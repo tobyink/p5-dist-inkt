@@ -1,7 +1,7 @@
 package Dist::Inkt::Role::WriteMetaYML;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.012';
+our $VERSION   = '0.013';
 
 use Moose::Role;
 use namespace::autoclean;
