@@ -1,0 +1,62 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use B;
+use Cwd qw(cwd);
+use Data::Dumper;
+use File::chdir;
+use Path::FindDev qw(find_dev);
+use Module::Runtime qw(use_package_optimistically);
+use List::MoreUtils qw(uniq);
+
+local($CWD) = my($root) = find_dev(cwd);
+
+my $ini = $root->child('dist.ini');
+$ini->exists or die("Could not find dist.ini; bailing out");
+
+my @ini = grep /^;;/, do { my $fh = $ini->openr; <$fh> };
+chomp @ini;
+
+my %config = map {
+	s/(?:^;;\s*)|(?:\s*$)//g;
+	my ($key, $value) = split /\s*=\s*/, $_, 2;
+	$key => scalar(eval($value));
+} @ini;
+
+my $class = delete $config{class}
+	or die("No Dist::Inkt subclass specified in $ini; bailing out");
+
+$config{rootdir} ||= $root;
+
+my $dist = use_package_optimistically($class)->new(%config);
+
+my @prereqs = sort grep { $_ ne 'perl' } uniq(
+	keys(%{ $dist->metadata->{prereqs}{runtime}{requires} || {} }),
+	keys(%{ $dist->metadata->{prereqs}{test}{requires} || {} }),
+	keys(%{ $dist->metadata->{prereqs}{runtime}{recommends} || {} }),
+	keys(%{ $dist->metadata->{prereqs}{test}{recommends} || {} }),
+	keys(%{ $dist->metadata->{prereqs}{test}{suggests} || {} }),
+);
+
+my $perl_ver = $dist->metadata->{prereqs}{runtime}{requires}{perl} || '5.010';
+
+print STDERR "Generating .travis.yml\n";
+
+my $yml = $dist->sourcefile(".travis.yml")->openw;
+
+print {$yml} "language: perl\n";
+print {$yml} "script: HARNESS_IS_VERBOSE=1 prove -Iinc -Ilib t\n";
+print {$yml} "install:\n";
+print {$yml} "  - cpanm ", join(" ", map B::perlstring($_), @prereqs), "\n";
+print {$yml} "perl:\n";
+for my $v (8, 10, 12, 14, 16, 18, 19)
+{
+	my $formatted = sprintf("5.%03d000", $v);
+	if ($formatted ge $perl_ver)
+	{
+		print {$yml} "  - \"5.$v\"\n";
+	}
+}
+
+exit(0);
