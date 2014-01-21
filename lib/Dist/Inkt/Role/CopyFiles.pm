@@ -44,14 +44,14 @@ after BUILD => sub {
 	unshift @{ $self->targets }, 'Files';
 };
 
-sub Path::Tiny::subsumes
+*Path::Tiny::subsumes = sub
 {
 	my ($self, $other) = @_;
 	return !!1 if $self eq $other;
 	return !!0 if !defined $other;
 	return !!0 if $other->parent eq $other;
 	return $self->subsumes($other->parent);
-}
+} unless Path::Tiny->can('subsumes');
 
 sub Build_Files
 {
