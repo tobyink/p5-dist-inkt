@@ -23,6 +23,23 @@ sub _build_has_shared_files
 	!! $self->sourcefile('share')->is_dir;
 }
 
+has directories_containing_tests => (
+	is      => 'ro',
+	isa     => ArrayRef,
+	lazy    => 1,
+	builder => '_build_directories_containing_tests',
+);
+
+sub _build_directories_containing_tests
+{
+	my $self = shift;
+	my $rule = Path::Iterator::Rule->new->file->name('*.t');
+	my %dirs;
+	$dirs{ Path::Tiny->new($_)->relative($self->rootdir)->dirname }++
+		for $rule->all( $self->sourcefile('t') );
+	[ sort keys %dirs ];
+}
+
 has needs_conflict_check_code => (
 	is      => 'ro',
 	isa     => Bool,
@@ -103,12 +120,14 @@ sub Build_MakefilePL
 			. "{ package MY; use File::ShareDir::Install qw(postamble) };\n";
 	}
 	
-	my $conflict_check = $self->needs_conflict_check_code ? $self->conflict_check_code : '';
+	my $conflict_check    = $self->needs_conflict_check_code    ? $self->conflict_check_code    : '';
 	my $optional_features = $self->needs_optional_features_code ? $self->optional_features_code : '';
+	my $tests             = join(q[ ], map "$_\*.t", @{ $self->directories_containing_tests });
 	
 	my $makefile = do { local $/ = <DATA> };
 	$makefile =~ s/%%%METADATA%%%/$dump/;
 	$makefile =~ s/%%%SHARE%%%/$share/;
+	$makefile =~ s/%%%TESTS%%%/$tests/;
 	$makefile =~ s/%%%DYNAMIC_CONFIG%%%/$dynamic_config/;
 	$makefile =~ s/%%%CONFLICT_CHECK%%%/$conflict_check/;
 	$makefile =~ s/%%%OPTIONAL_FEATURES%%%/$optional_features/;
@@ -211,6 +230,7 @@ my %WriteMakefileArgs = (
 	VERSION    => $meta->{version},
 	EXE_FILES  => [ map $_->{file}, values %{ $meta->{x_provides_scripts} || {} } ],
 	NAME       => do { my $n = $meta->{name}; $n =~ s/-/::/g; $n },
+	test       => { TESTS => "%%%TESTS%%%" },
 	%dynamic_config,
 );
 
