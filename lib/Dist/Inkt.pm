@@ -3,7 +3,7 @@ package Dist::Inkt;
 use 5.010001;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.013';
+our $VERSION   = '0.014';
 
 use Moose;
 use Module::Metadata;

@@ -100,3 +100,10 @@
 		item "Generated Makefile.PL performs a better check for minimum Perl version."^^Change;
 	].
 
+`Dist-Inkt 0.014 cpan:TOBYINK`
+	issued  2014-01-21;
+	changeset [
+		item "Generated Makefile.PL explicitly lists test suite directories."^^Change;
+		item "Use Path::Tiny's `subsumes` method over home-brew version."^^Change;
+		item "Bundle a `distinkt-travisyml` script to automate creating .travis.yml files."^^Addition;
+	].
