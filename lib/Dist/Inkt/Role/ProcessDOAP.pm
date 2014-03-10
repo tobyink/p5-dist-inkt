@@ -124,8 +124,14 @@ sub cpanmeta_resources
 			my $r = {};
 			$r->{url}  = $repo->location->uri if $repo->location;
 			$r->{web}  = $repo->browse->uri   if $repo->browse;
-			for my $type (@{ $repo->rdf_type || [] }) {
+			for my $type (@{ $repo->rdf_type || [] })
+			{
 				$r->{type} ||= lc($1) if $type->uri =~ m{[/#](\w+)Repository$};
+			}
+			if ($r->{web} =~ m{^https?://github.com/([^/]+)/([^/]+)$})
+			{
+				$r->{url}  ||= sprintf('git://github.com/%s/%s.git', $1, $2);
+				$r->{type} ||= 'git';
 			}
 			$resources{repository} = $r;
 			last REPO;
