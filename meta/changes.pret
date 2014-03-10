@@ -107,3 +107,9 @@
 		item "Use Path::Tiny's `subsumes` method over home-brew version."^^Change;
 		item "Bundle a `distinkt-travisyml` script to automate creating .travis.yml files."^^Addition;
 	].
+
+`Dist-Inkt 0.015 cpan:TOBYINK`
+	issued  2014-03-10;
+	changeset [
+		item "Guess repository details from repository web URL for github.com."^^Change;
+	].
