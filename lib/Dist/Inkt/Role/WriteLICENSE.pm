@@ -7,8 +7,6 @@ use Moose::Role;
 use Software::LicenseUtils;
 use namespace::autoclean;
 
-with 'Dist::Inkt::Role::RDFModel';
-
 after BUILD => sub {
 	my $self = shift;
 	unshift @{ $self->targets }, 'LICENSE';

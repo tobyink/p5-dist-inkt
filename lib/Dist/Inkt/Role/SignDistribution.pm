@@ -8,8 +8,6 @@ use Module::Signature ();
 use File::chdir;
 use namespace::autoclean;
 
-with 'Dist::Inkt::Role::RDFModel';
-
 after BUILD => sub {
 	my $self = shift;
 	unshift @{ $self->targets }, 'SIGNATURE';
