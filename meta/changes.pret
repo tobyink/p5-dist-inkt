@@ -118,4 +118,13 @@
 	issued  2014-05-26;
 	changeset [
 		item "Split out a lot of functionality into Dist-Inkt-DOAP."^^Packaging;
+		item "Dist::Inkt::Profile::Simple."^^Addition;
+		item "Dist::Inkt::Role::CPANfile."^^Addition;
+		item "Dist::Inkt::Role::WriteDOAPLite."^^Addition;
+	].
+
+`Dist-Inkt 0.017 cpan:TOBYINK`
+	issued  2014-05-26;
+	changeset [
+		item "Simplify usage of Dist::Inkt::Profile::Simple, and example."^^Packaging;
 	].
