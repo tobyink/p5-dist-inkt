@@ -132,10 +132,7 @@ has targets => (
 	builder  => '_build_targets',
 );
 
-sub _build_targets
-{
-	return [];
-}
+sub _build_targets { [] }
 
 has rights_for_generated_files => (
 	is       => 'ro',
@@ -147,14 +144,40 @@ has rights_for_generated_files => (
 	},
 );
 
-sub _inherited_rights {};
+sub _inherited_rights {}
 
 sub BUILD
 {
 	my $self = shift;
+	
 	return if $self->{_already_built}++;
 	$self->PopulateModel;
 	$self->PopulateMetadata;
+	
+	my $die = 0;
+	
+	my $l = $self->metadata->{license};
+	unless ($l and ref($l) eq 'ARRAY' and @$l and $l->[0] ne 'unknown')
+	{
+		$self->log("ERROR: licence unknown!");
+		$die++;
+	}
+	
+	my $a = $self->metadata->{author};
+	unless ($a and ref($a) eq 'ARRAY' and @$a and $a->[0] ne 'unknown')
+	{
+		$self->log("ERROR: author unknown!");
+		$die++;
+	}
+	
+	my $b = $self->metadata->{abstract};
+	unless (defined($b) and $b ne 'unknown')
+	{
+		$self->log("ERROR: abstract unknown!");
+		$die++;
+	}
+	
+	die "Incomplete metadata; stopped" if $die;
 }
 
 sub PopulateModel {}
