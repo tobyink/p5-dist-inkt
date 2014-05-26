@@ -104,6 +104,12 @@ sub _build_metadata
 	for (qw/ license author /) {
 		$meta->{$_} = [] if @{$meta->{$_}}==1 && $meta->{$_}[0] eq 'unknown';
 	}
+	if ($self->sourcefile('meta/META.PL'))
+	{
+		local $_ = $meta;
+		my $filename = $self->sourcefile('meta/META.PL')->absolute->stringify;
+		do($filename);
+	}
 	return $meta;
 }
 
