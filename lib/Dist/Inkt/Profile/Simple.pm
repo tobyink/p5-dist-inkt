@@ -16,6 +16,7 @@ with qw(
 	Dist::Inkt::Role::WriteMakefilePL
 	Dist::Inkt::Role::WriteMetaJSON
 	Dist::Inkt::Role::WriteMetaYML
+	Dist::Inkt::Role::WriteDOAPLite
 	Dist::Inkt::Role::WriteLICENSE
 	Dist::Inkt::Role::WriteREADME
 	Dist::Inkt::Role::WriteINSTALL

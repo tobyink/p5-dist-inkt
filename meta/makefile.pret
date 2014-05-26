@@ -3,6 +3,7 @@
 @prefix : <http://ontologi.es/doap-deps#>.
 
 `Dist-Inkt`
+	:runtime-requirement  [ :on "CPAN::Changes 0"^^:CpanId ];
 	:runtime-requirement  [ :on "CPAN::Meta 0"^^:CpanId ];
 	:runtime-requirement  [ :on "CPAN::Meta::Requirements"^^:CpanId ];
 	:runtime-requirement  [ :on "Data::Dump 0"^^:CpanId ];
@@ -14,6 +15,7 @@
 	:runtime-requirement  [ :on "Moose 2.0800"^^:CpanId ];
 	:runtime-requirement  [ :on "Path::Iterator::Rule 0"^^:CpanId ];
 	:runtime-requirement  [ :on "Path::Tiny 0"^^:CpanId ];
+	:runtime-requirement  [ :on "RDF::DOAP::Lite 0"^^:CpanId ];
 	:runtime-requirement  [ :on "RDF::DOAP::Project 0.007"^^:CpanId; :since `Dist-Inkt 0.005 cpan:TOBYINK` ];
 	:runtime-requirement  [ :on "RDF::Trine 1.000"^^:CpanId ];
 	:runtime-requirement  [ :on "RDF::TrineX::Functions 0"^^:CpanId ];
