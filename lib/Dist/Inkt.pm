@@ -7,6 +7,7 @@ our $VERSION   = '0.015';
 
 use Moose;
 use Module::Metadata;
+use List::MoreUtils qw(uniq);
 use Types::Standard -types;
 use Types::Path::Tiny -types;
 use Path::Tiny 'path';
@@ -130,6 +131,18 @@ sub _build_targets
 	return [];
 }
 
+has rights_for_generated_files => (
+	is       => 'ro',
+	isa      => HashRef[ArrayRef],
+	default  => sub {
+		+{
+			COPYRIGHT => [ 'None' => 'public-domain' ],
+		};
+	},
+);
+
+sub _inherited_rights {};
+
 sub BUILD
 {
 	my $self = shift;
@@ -149,7 +162,7 @@ sub BuildTargets
 	
 	$self->Build_Files if $self->DOES('Dist::Inkt::Role::CopyFiles');
 	
-	for my $target (@{ $self->targets })
+	for my $target (uniq @{ $self->targets })
 	{
 		next if $self->DOES('Dist::Inkt::Role::CopyFiles') && $target eq 'Files';
 		
@@ -166,7 +179,7 @@ sub BuildManifest
 	$self->log("Writing $file");
 	$self->rights_for_generated_files->{'MANIFEST'} ||= [
 		'None', 'public-domain'
-	] if $self->DOES('Dist::Inkt::Role::WriteCOPYRIGHT');
+	];
 	
 	my $rule = 'Path::Iterator::Rule'->new->file;
 	my $root = $self->targetdir;

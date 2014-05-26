@@ -7,40 +7,67 @@ use Moose::Role;
 use List::MoreUtils qw( uniq );
 use Path::Tiny qw( path );
 use Path::Iterator::Rule;
-use RDF::Trine qw( iri literal statement variable );
 use Software::License;
 use Software::LicenseUtils;
 use Types::Standard -types;
 use namespace::autoclean;
 
-with 'Dist::Inkt::Role::RDFModel';
-
-use RDF::Trine::Namespace qw[RDF RDFS OWL XSD];
-my $CPAN = RDF::Trine::Namespace->new('http://purl.org/NET/cpan-uri/terms#');
-my $DC   = RDF::Trine::Namespace->new('http://purl.org/dc/terms/');
-my $DOAP = RDF::Trine::Namespace->new('http://usefulinc.com/ns/doap#');
-my $FOAF = RDF::Trine::Namespace->new('http://xmlns.com/foaf/0.1/');
-my $NFO  = RDF::Trine::Namespace->new('http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#');
-my $SKOS = RDF::Trine::Namespace->new('http://www.w3.org/2004/02/skos/core#');
-
 use constant FORMAT_URI => 'http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/';
+
+my ($_serialize_file, $_serialize_stanza);
+BEGIN {
+	$_serialize_file = sub {
+		my $self = shift;
+		return join "\n",
+			map $_->to_string,
+			(
+				$self->header,
+				@{ $self->files },
+				@{ $self->license },
+			);
+	};
+
+	$_serialize_stanza = sub 
+	{
+		my $self = shift;
+		my $str;
+		for my $f ($self->FIELDS)
+		{
+			my $F = join "-", map ucfirst, split "_", $f;
+			my $v = $self->$f;
+			if ($f eq 'body') {
+				$v =~ s{^}" "mg;
+				$str .= "$v\n";
+			}
+			elsif (ref $v eq "ARRAY") {
+				$v = join "\n " => @$v;
+				$str .= "$F: $v\n";
+			}
+			elsif (defined $v and length $v) {
+				$v =~ s{^}" "mg;
+				$str .= "$F:$v\n";
+			}
+		}
+		return $str;
+	}
+}; #/BEGIN
 
 use MooX::Struct -rw,
 	CopyrightFile => [
 		qw/ $header @files @license /,
-		to_string => \&_serialize_file,
+		to_string => $_serialize_file,
 	],
 	HeaderSection => [
 		qw/ $format $upstream_name $upstream_contact $source /,
-		to_string => \&_serialize_stanza,
+		to_string => $_serialize_stanza,
 	],
 	FilesSection => [
 		qw/ @files $copyright $license $comment /,
-		to_string => \&_serialize_stanza,
+		to_string => $_serialize_stanza,
 	],
 	LicenseSection => [
 		qw/ $license $body /,
-		to_string => \&_serialize_stanza,
+		to_string => $_serialize_stanza,
 	],
 ;
 
@@ -107,16 +134,6 @@ has debian_copyright => (
 	isa      => InstanceOf[CopyrightFile],
 	lazy     => 1,
 	builder  => '_build_debian_copyright',
-);
-
-has rights_for_generated_files => (
-	is       => 'ro',
-	isa      => HashRef[ArrayRef],
-	default  => sub {
-		+{
-			COPYRIGHT => [ 'None' => 'public-domain' ],
-		};
-	},
 );
 
 our @Licences;
@@ -221,38 +238,49 @@ sub _handle_file
 	return ($f, $copyright, $licence_name, $comment);
 }
 
-sub _inherited_rights
+around _inherited_rights => sub
 {
-	my ($self, $f) = @_;
+	my $next = shift;
+	my $self = shift;
+	my ($f) = @_;
 	
-	my $holders = Moose::Util::english_list(
-		map $_->to_string('compact'), @{$self->doap_project->maintainer}
-	);
-	
-	my $year = 1900 + (localtime)[5];
-	$year = 1900 + (localtime((stat $f)[9]))[5] if $f;
-	
-	for my $l (@{ $self->doap_project->license })
+	my @licence_uris = @{$self->metadata->{resources}{license} || [] };	
+	if (@licence_uris)
 	{
-		next unless exists $URIS{ $l->uri };
-		my $class = "Software::License::".$URIS{$l->uri};
-		
-		return (
-			sprintf("Copyright %d %s.", $year, $holders),
-			$class->new({ holder => $holders, year => $year }),
+		my $holders = Moose::Util::english_list(
+			$self->can('doap_project')
+				? map($_->to_string('compact'), @{$self->doap_project->maintainer})
+				: @{$self->metadata->{author}}
 		);
+		
+		my $year = 1900 + (localtime)[5];
+		$year = 1900 + (localtime((stat $f)[9]))[5] if $f;
+		
+		for my $l (@licence_uris)
+		{
+			next unless exists $URIS{$l};
+			my $class = "Software::License::".$URIS{$l};
+			
+			return (
+				sprintf("Copyright %d %s.", $year, $holders),
+				$class->new({ holder => $holders, year => $year }),
+			);
+		}
 	}
 	
-	return;
-}
+	return $self->$next(@_);
+};
 
 sub _determine_rights
 {
 	my ($self, $f) = @_;
 	
-	if (my @rights = $self->_determine_rights_from_rdf($f))
+	if ($self->can('_determine_rights_from_rdf'))
 	{
-		return @rights;
+		if (my @rights = $self->_determine_rights_from_rdf($f))
+		{
+			return @rights;
+		}
 	}
 	
 	if (my @rights = $self->_determine_rights_from_pod($f))
@@ -270,45 +298,14 @@ sub _determine_rights
 	or  $f =~ m{\At/.*(\.pm|\.t)\z}
 	or  $f eq 'dist.ini')
 	{
-		$self->log("Guessing copyright for file $f");
-		return $self->_inherited_rights($f);
+		if (my @rights = $self->_inherited_rights($f))
+		{
+			$self->log("Guessing copyright for file $f");
+			return @rights;
+		}
 	}
 	
 	$self->log("WARNING: Unable to determine copyright for file $f");
-	return;
-}
-
-sub _determine_rights_from_rdf
-{
-	my ($self, $f) = @_;
-	unless ($self->{_rdf_copyright_data})
-	{
-		my $model = $self->model;
-		my $iter  = $model->get_pattern(
-			RDF::Trine::Pattern->new(
-				statement(variable('subject'), $NFO->fileName, variable('filename')),
-				statement(variable('subject'), $DC->license, variable('license')),
-				statement(variable('subject'), $DC->rightsHolder, variable('rights_holder')),
-				statement(variable('rights_holder'), $FOAF->name, variable('name')),
-			),
-		);
-		my %results;
-		while (my $row = $iter->next) {
-			my $l = $row->{license}->uri;
-			$row->{class} = literal("Software::License::$URIS{$l}")
-				if exists $URIS{$l};
-			$results{ $row->{filename}->literal_value } = $row;
-		}
-		$self->{_rdf_copyright_data} = \%results;
-	}
-	
-	if ( my $row = $self->{_rdf_copyright_data}{$f} ) {
-		return (
-			sprintf("Copyright %d %s.", 1900 + (localtime((stat $f)[9]))[5], $row->{name}->literal_value),
-			$row->{class}->literal_value->new({holder => "the copyright holder(s)"}),
-		) if $row->{class};
-	}
-	
 	return;
 }
 
@@ -360,42 +357,6 @@ sub Build_COPYRIGHT
 	] if $self->DOES('Dist::Inkt::Role::WriteCOPYRIGHT');
 	
 	$file->spew_utf8( $self->debian_copyright->to_string );
-}
-
-sub _serialize_file
-{
-	my $self = shift;
-	return join "\n",
-		map $_->to_string,
-		(
-			$self->header,
-			@{ $self->files },
-			@{ $self->license },
-		);
-}
-
-sub _serialize_stanza
-{
-	my $self = shift;
-	my $str;
-	for my $f ($self->FIELDS)
-	{
-		my $F = join "-", map ucfirst, split "_", $f;
-		my $v = $self->$f;
-		if ($f eq 'body') {
-			$v =~ s{^}" "mg;
-			$str .= "$v\n";
-		}
-		elsif (ref $v eq "ARRAY") {
-			$v = join "\n " => @$v;
-			$str .= "$F: $v\n";
-		}
-		elsif (defined $v and length $v) {
-			$v =~ s{^}" "mg;
-			$str .= "$F:$v\n";
-		}
-	}
-	return $str;
 }
 
 1;
