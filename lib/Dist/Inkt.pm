@@ -289,8 +289,8 @@ As such, Dist::Inkt is not so much a distribution builder, as it is a
 framework for writing your own distribution builder.
 
 Several roles of varying utility are bundled with Dist::Inkt, as is
-L<Dist::Inkt::Profile::TOBYINK>, a subclass of Dist::Inkt which consumes
-all of these roles.
+L<Dist::Inkt::Profile::Simple>, a subclass of Dist::Inkt which consumes
+most of these roles.
 
 =head1 COMPANIONS
 
@@ -357,7 +357,7 @@ Toby Inkster E<lt>tobyink@cpan.orgE<gt>.
 
 =head1 COPYRIGHT AND LICENCE
 
-This software is copyright (c) 2013 by Toby Inkster.
+This software is copyright (c) 2013-2014 by Toby Inkster.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
