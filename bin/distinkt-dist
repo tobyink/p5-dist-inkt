@@ -21,8 +21,7 @@ my %config = map {
 	$key => scalar(eval($value));
 } @ini;
 
-my $class = delete $config{class}
-	or die("No Dist::Inkt subclass specified in $ini; bailing out");
+my $class = delete($config{class}) || 'Dist::Inkt::Profile::Simple';
 
 $config{rootdir} ||= $root;
 

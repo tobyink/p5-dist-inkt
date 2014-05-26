@@ -1,4 +1,4 @@
-package Dist::Inkt::Profile::Core;
+package Dist::Inkt::Profile::Simple;
 
 our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.015';
