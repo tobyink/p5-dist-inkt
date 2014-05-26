@@ -92,13 +92,17 @@ sub Build_LICENSE
 		return;
 	}
 	
+	my $holders = Moose::Util::english_list(
+		$self->can('doap_project')
+			? map($_->to_string('compact'), @{$self->doap_project->maintainer})
+			: @{$self->metadata->{author}}
+	);
+	
 	$class = "Software::License::$class";
 	eval "require $class;";
 	my $licence = $class->new({
 		year   => [localtime]->[5] + 1900,
-		holder => Moose::Util::english_list(
-			sort map $_->to_string('compact'), $self->doap_project->gather_all_maintainers
-		),
+		holder => $holders,
 	});
 	
 	$file->spew_utf8( $licence->fulltext );
