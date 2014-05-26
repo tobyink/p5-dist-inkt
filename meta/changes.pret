@@ -113,3 +113,9 @@
 	changeset [
 		item "Guess repository details from repository web URL for github.com."^^Change;
 	].
+
+`Dist-Inkt 0.016 cpan:TOBYINK`
+	issued  2014-05-26;
+	changeset [
+		item "Split out a lot of functionality into Dist-Inkt-DOAP."^^Packaging;
+	].
