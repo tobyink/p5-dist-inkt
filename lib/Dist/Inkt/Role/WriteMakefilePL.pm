@@ -67,7 +67,7 @@ has needs_optional_features_code => (
 sub _build_needs_optional_features_code
 {
 	my $self = shift;
-	!! %{ $self->metadata->{optional_features} };
+	!! %{ $self->metadata->{optional_features} || {} };
 }
 
 after PopulateMetadata => sub {

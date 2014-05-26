@@ -5,25 +5,18 @@ our $VERSION   = '0.015';
 
 use Moose;
 
-extends 'Dist::Inkt';
+extends 'Dist::Inkt::Profile::Core';
 
 with qw(
+	Dist::Inkt::Role::CopyStandardDocuments
 	Dist::Inkt::Role::ReadMetaDir
 	Dist::Inkt::Role::ProcessDOAP
 	Dist::Inkt::Role::ProcessDOAPDeps
-	Dist::Inkt::Role::CopyStandardDocuments
-	Dist::Inkt::Role::CopyFiles
-	Dist::Inkt::Role::MetaProvides
-	Dist::Inkt::Role::MetaProvidesScripts
-	Dist::Inkt::Role::WriteMakefilePL
-	Dist::Inkt::Role::WriteMetaJSON
-	Dist::Inkt::Role::WriteMetaYML
 	Dist::Inkt::Role::WriteDOAP
 	Dist::Inkt::Role::WriteChanges
 	Dist::Inkt::Role::WriteCOPYRIGHT
 	Dist::Inkt::Role::WriteCREDITS
 	Dist::Inkt::Role::WriteLICENSE
-	Dist::Inkt::Role::WriteREADME
 	Dist::Inkt::Role::WriteINSTALL
 	Dist::Inkt::Role::SignDistribution
 );
