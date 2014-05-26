@@ -11,16 +11,10 @@
 	:runtime-requirement  [ :on "Module::CPANfile 1.0002"^^:CpanId ];
 	:runtime-requirement  [ :on "Module::Metadata 0"^^:CpanId ];
 	:runtime-requirement  [ :on "Module::Signature 0"^^:CpanId ];
-	:runtime-requirement  [ :on "MooX::Struct 0"^^:CpanId ];
 	:runtime-requirement  [ :on "Moose 2.0800"^^:CpanId ];
 	:runtime-requirement  [ :on "Path::Iterator::Rule 0"^^:CpanId ];
 	:runtime-requirement  [ :on "Path::Tiny 0"^^:CpanId ];
 	:runtime-requirement  [ :on "RDF::DOAP::Lite 0"^^:CpanId ];
-	:runtime-requirement  [ :on "RDF::DOAP::Project 0.007"^^:CpanId; :since `Dist-Inkt 0.005 cpan:TOBYINK` ];
-	:runtime-requirement  [ :on "RDF::Trine 1.000"^^:CpanId ];
-	:runtime-requirement  [ :on "RDF::TrineX::Functions 0"^^:CpanId ];
-	:runtime-requirement  [ :on "RDF::TrineX::Parser::Pretdsl 0.205"^^:CpanId ];
-	:runtime-requirement  [ :on "RDF::TrineX::Serializer::MockTurtleSoup 0"^^:CpanId ];
 	:runtime-requirement  [ :on "Software::License 0"^^:CpanId ];
 	:runtime-requirement  [ :on "Types::Path::Tiny 0"^^:CpanId ];
 	:runtime-requirement  [ :on "Types::Standard 0"^^:CpanId ];
