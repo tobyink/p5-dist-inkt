@@ -8,6 +8,7 @@ use Moose;
 extends 'Dist::Inkt';
 
 with qw(
+	Dist::Inkt::Role::CPANfile
 	Dist::Inkt::Role::CopyStandardDocuments
 	Dist::Inkt::Role::CopyFiles
 	Dist::Inkt::Role::MetaProvides

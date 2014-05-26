@@ -11,6 +11,7 @@ with qw(
 	Dist::Inkt::Role::ReadMetaDir
 	Dist::Inkt::Role::ProcessDOAP
 	Dist::Inkt::Role::ProcessDOAPDeps
+	Dist::Inkt::Role::CPANfile
 	Dist::Inkt::Role::DetermineRightsFromRdf
 	Dist::Inkt::Role::CopyStandardDocuments
 	Dist::Inkt::Role::CopyFiles
