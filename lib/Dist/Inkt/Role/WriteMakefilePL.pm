@@ -110,7 +110,7 @@ sub Build_MakefilePL
 	$self->rights_for_generated_files->{'Makefile.PL'} ||= [
 		'Copyright 2013 Toby Inkster.',
 		"Software::License::Perl_5"->new({ holder => 'Toby Inkster', year => '2013' }),
-	] if $self->DOES('Dist::Inkt::Role::WriteCOPYRIGHT') && !$dynamic_config;
+	] if !$dynamic_config;
 
 	my $share = '';
 	if ($self->has_shared_files)

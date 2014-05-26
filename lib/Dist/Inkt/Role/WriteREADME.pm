@@ -45,7 +45,7 @@ sub Build_README
 	# inherit rights from input pod
 	$self->rights_for_generated_files->{'README'} ||= [
 		$self->_determine_rights($input)
-	] if $self->DOES('Dist::Inkt::Role::WriteCOPYRIGHT');
+	];
 
 	$pod->parse_from_file("$input", "$file");
 }

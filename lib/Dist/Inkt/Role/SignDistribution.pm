@@ -21,7 +21,7 @@ sub Build_SIGNATURE
 	$self->log('Writing %s', $file);
 	$self->rights_for_generated_files->{'SIGNATURE'} ||= [
 		'None', 'public-domain'
-	] if $self->DOES('Dist::Inkt::Role::WriteCOPYRIGHT');
+	];
 	$file->spew('placeholder');
 }
 
