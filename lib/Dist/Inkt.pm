@@ -351,6 +351,20 @@ L<Minilla>
 
 =back
 
+Various extensions for Dist::Inkt:
+
+=over
+
+=item *
+
+L<Dist::Inkt::DOAP>
+
+=item *
+
+L<Dist::Inkt::Profile::TOBYINK>
+
+=back
+
 =head1 AUTHOR
 
 Toby Inkster E<lt>tobyink@cpan.orgE<gt>.
