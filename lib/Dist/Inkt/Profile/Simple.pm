@@ -3,9 +3,9 @@ package Dist::Inkt::Profile::Simple;
 our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.017';
 
-use Moose;
+use Moo;
 use Types::Standard qw( ArrayRef Str );
-use namespace::autoclean;
+use namespace::sweep;
 
 extends 'Dist::Inkt';
 

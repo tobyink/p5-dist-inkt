@@ -3,10 +3,10 @@ package Dist::Inkt::Role::WriteMakefilePL;
 our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.017';
 
-use Moose::Role;
+use Moo::Role;
 use Types::Standard -types;
 use Data::Dump 'pp';
-use namespace::autoclean;
+use namespace::sweep;
 
 sub DYNAMIC_CONFIG_PATH () { 'meta/DYNAMIC_CONFIG.PL' };
 

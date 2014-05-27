@@ -3,9 +3,9 @@ package Dist::Inkt::Role::WriteLICENSE;
 our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.017';
 
-use Moose::Role;
+use Moo::Role;
 use Software::LicenseUtils;
-use namespace::autoclean;
+use namespace::sweep;
 
 after BUILD => sub {
 	my $self = shift;
@@ -92,7 +92,8 @@ sub Build_LICENSE
 		return;
 	}
 	
-	my $holders = Moose::Util::english_list(
+	require Type::Utils;
+	my $holders = Type::Utils::english_list(
 		$self->can('doap_project')
 			? map($_->to_string('compact'), @{$self->doap_project->maintainer})
 			: @{$self->metadata->{author}}

@@ -3,15 +3,15 @@ package Dist::Inkt::Role::CopyStandardDocuments;
 our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.017';
 
-use Moose::Role;
+use Moo::Role;
 use Types::Path::Tiny -types;
 use Path::Tiny 'path';
-use namespace::autoclean;
+use namespace::sweep;
 
 has standard_documents_dir => (
 	is       => 'ro',
 	isa      => AbsDir,
-	coerce   => 1,
+	coerce   => AbsDir->coercion,
 	lazy     => 1,
 	builder  => '_build_standard_documents_dir',
 );

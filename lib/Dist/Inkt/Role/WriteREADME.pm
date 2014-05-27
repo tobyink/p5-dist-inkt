@@ -3,9 +3,9 @@ package Dist::Inkt::Role::WriteREADME;
 our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.017';
 
-use Moose::Role;
+use Moo::Role;
 use Pod::Text;
-use namespace::autoclean;
+use namespace::sweep;
 
 has source_for_readme => (
 	is      => 'ro',

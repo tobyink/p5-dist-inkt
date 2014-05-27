@@ -5,14 +5,14 @@ use 5.010001;
 our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.017';
 
-use Moose;
+use Moo;
 use Module::Metadata;
 use List::MoreUtils qw(uniq);
 use Types::Standard -types;
 use Types::Path::Tiny -types;
 use Path::Tiny 'path';
 use Path::Iterator::Rule;
-use namespace::autoclean;
+use namespace::sweep;
 
 has name => (
 	is       => 'ro',
@@ -55,7 +55,7 @@ has rootdir => (
 	is       => 'ro',
 	isa      => AbsDir,
 	required => 1,
-	coerce   => 1,
+	coerce   => AbsDir->coercion,
 	handles  => {
 		sourcefile => 'child',
 	},
@@ -65,7 +65,7 @@ has targetdir => (
 	is       => 'ro',
 	isa      => AbsDir,
 	lazy     => 1,
-	coerce   => 1,
+	coerce   => AbsDir->coercion,
 	builder  => '_build_targetdir',
 	handles  => {
 		targetfile  => 'child',

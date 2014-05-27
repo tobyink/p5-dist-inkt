@@ -3,11 +3,11 @@ package Dist::Inkt::Role::CopyFiles;
 our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.017';
 
-use Moose::Role;
+use Moo::Role;
 use Types::Standard -types;
 use Path::Tiny 'path';
 use Path::Iterator::Rule;
-use namespace::autoclean;
+use namespace::sweep;
 
 use constant Skippable => (CodeRef | RegexpRef | Str)->create_child_type(name => 'Skippable');
 

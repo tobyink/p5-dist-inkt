@@ -3,8 +3,8 @@ package Dist::Inkt::Role::WriteINSTALL;
 our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.017';
 
-use Moose::Role;
-use namespace::autoclean;
+use Moo::Role;
+use namespace::sweep;
 
 after BUILD => sub {
 	my $self = shift;

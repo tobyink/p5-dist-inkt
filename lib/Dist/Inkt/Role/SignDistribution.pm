@@ -3,10 +3,10 @@ package Dist::Inkt::Role::SignDistribution;
 our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.017';
 
-use Moose::Role;
+use Moo::Role;
 use Module::Signature ();
 use File::chdir;
-use namespace::autoclean;
+use namespace::sweep;
 
 after BUILD => sub {
 	my $self = shift;

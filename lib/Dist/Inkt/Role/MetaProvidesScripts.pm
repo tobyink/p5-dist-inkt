@@ -3,9 +3,9 @@ package Dist::Inkt::Role::MetaProvidesScripts;
 our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.017';
 
-use Moose::Role;
+use Moo::Role;
 use Path::Tiny 'path';
-use namespace::autoclean;
+use namespace::sweep;
 
 after PopulateMetadata => sub
 {

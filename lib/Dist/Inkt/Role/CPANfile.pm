@@ -3,8 +3,9 @@ package Dist::Inkt::Role::CPANfile;
 our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.017';
 
-use Moose::Role;
-use namespace::autoclean;
+use Moo::Role;
+use Scalar::Util qw(blessed);
+use namespace::sweep;
 
 after PopulateMetadata => sub
 {
