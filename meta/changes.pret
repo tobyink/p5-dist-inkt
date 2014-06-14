@@ -126,5 +126,11 @@
 `Dist-Inkt 0.017 cpan:TOBYINK`
 	issued  2014-05-26;
 	changeset [
-		item "Simplify usage of Dist::Inkt::Profile::Simple, and example."^^Packaging;
+		item "Simplify usage of Dist::Inkt::Profile::Simple, and example."^^Change;
+	].
+
+`Dist-Inkt 0.018 cpan:TOBYINK`
+	issued  2014-06-14;
+	changeset [
+		item "Add missing File::chdir dependency."^^Packaging;
 	].
