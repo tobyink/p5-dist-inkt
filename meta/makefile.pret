@@ -7,6 +7,7 @@
 	:runtime-requirement  [ :on "CPAN::Meta 0"^^:CpanId ];
 	:runtime-requirement  [ :on "CPAN::Meta::Requirements"^^:CpanId ];
 	:runtime-requirement  [ :on "Data::Dump 0"^^:CpanId ];
+	:runtime-requirement  [ :on "File::chdir 0"^^:CpanId ];
 	:runtime-requirement  [ :on "List::MoreUtils 0"^^:CpanId ];
 	:runtime-requirement  [ :on "Module::CPANfile 1.0002"^^:CpanId ];
 	:runtime-requirement  [ :on "Module::Metadata 0"^^:CpanId ];
