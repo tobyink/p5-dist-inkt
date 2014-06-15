@@ -10,7 +10,8 @@ use namespace::autoclean;
 
 after BUILD => sub {
 	my $self = shift;
-	unshift @{ $self->targets }, 'SIGNATURE';
+	unshift @{ $self->targets }, 'SIGNATURE'
+		unless $ENV{PERL_DIST_INKT_NOSIGNATURE};
 };
 
 sub Build_SIGNATURE
@@ -27,6 +28,9 @@ sub Build_SIGNATURE
 
 after BuildManifest => sub {
 	my $self = shift;
+	
+	$self->targetfile('SIGNATURE')->exists or return;
+	
 	local $CWD = $self->targetdir;
 	system("cpansign sign");
 	if ($?) {
