@@ -15,6 +15,7 @@
 	:runtime-requirement  [ :on "Moose 2.0800"^^:CpanId ];
 	:runtime-requirement  [ :on "Path::Iterator::Rule 0"^^:CpanId ];
 	:runtime-requirement  [ :on "Path::Tiny 0"^^:CpanId ];
+	:runtime-requirement  [ :on "Path::FindDev 0"^^:CpanId ];
 	:runtime-requirement  [ :on "RDF::DOAP::Lite 0"^^:CpanId ];
 	:runtime-requirement  [ :on "Software::License 0"^^:CpanId ];
 	:runtime-requirement  [ :on "Types::Path::Tiny 0"^^:CpanId ];
