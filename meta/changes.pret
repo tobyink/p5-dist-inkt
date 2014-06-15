@@ -134,3 +134,11 @@
 	changeset [
 		item "Add missing File::chdir dependency."^^Packaging;
 	].
+
+`Dist-Inkt 0.019 cpan:TOBYINK`
+	issued  2014-06-15;
+	changeset [
+		item "Add missing Path::FindDev dependency."^^Packaging;
+		item "Cope when ~/perl5/standard-documents/ is missing."^^Change;
+		item "Support PERL_DIST_INKT_NOSIGNATURE environment variable to skip building a SIGNATURE file."^^Change;
+	].
