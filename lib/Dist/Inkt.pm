@@ -308,6 +308,59 @@ sub BuildAll
 	}
 }
 
+sub BuildTravisYml
+{
+	my $self = shift;
+	
+	$self->log("Generating .travis.yml");
+	my $yml = $self->sourcefile(".travis.yml")->openw;
+	
+	my $perl_ver = $self->metadata->{prereqs}{runtime}{requires}{perl} || '5.014';
+	
+	print {$yml} "language: perl\n";
+	print {$yml} "perl:\n";
+	for my $v (8, 10, 12, 14, 16, 18, 20)
+	{
+		my $formatted = sprintf("5.%03d000", $v);
+		$formatted = '5.008001' if $formatted eq '5.008000';
+		
+		if ($formatted ge $perl_ver)
+		{
+			print {$yml} "  - \"5.$v\"\n";
+		}
+	}
+	
+	my $class = ref($self);
+	
+	print {$yml} <<"TAIL";
+matrix:
+  include:
+    - perl: 5.18.2
+      env: COVERAGE=1         # enables coverage+coveralls reporting
+before_install:
+  - export DIST_INKT_PROFILE="$class"
+  - git clone git://github.com/tobyink/perl-travis-helper
+  - source perl-travis-helper/init
+  - build-perl
+  - perl -V
+  - build-dist
+  - cd \$BUILD_DIR             # \$BUILD_DIR is set by the build-dist command
+install:
+  - cpan-install --toolchain  # installs a vaguely recent EUMM, Exporter
+  - cpan-install --deps       # installs prereqs, including recommends
+  - cpan-install --coverage   # installs converage prereqs, if enabled
+before_script:
+  - coverage-setup
+script:
+  - prove -l -j\$((SYSTEM_CORES + 1)) \$(test-dirs)   # parallel testing
+after_success:
+  - coverage-report
+
+TAIL
+	
+	return;
+}
+
 sub log
 {
 	my $self = shift;

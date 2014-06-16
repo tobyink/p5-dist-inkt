@@ -9,7 +9,9 @@ use Path::FindDev qw(find_dev);
 local($CWD) = find_dev(cwd);
 
 my %opts = map {
-	/^--(\w+)=(.+)$/ ? ($1 => $2) : die("Unrecognized argument: $_");
+	/^--TRAVIS$/     ? (should_sign => 0, should_compress => 0) :
+	/^--(\w+)=(.+)$/ ? ($1 => $2) :
+	die("Unrecognized argument: $_");
 } @ARGV;
 
 require Dist::Inkt;

@@ -1,10 +1,30 @@
 language: perl
-script: HARNESS_IS_VERBOSE=1 prove -Iinc -Ilib t
-install:
-  - cpanm "CPAN::Meta" "CPAN::Meta::Requirements" "Data::Dump" "List::MoreUtils" "Module::Metadata" "Module::Signature" "MooX::Struct" "Moose" "Path::Iterator::Rule" "Path::Tiny" "RDF::DOAP::Project" "RDF::Trine" "RDF::TrineX::Functions" "RDF::TrineX::Parser::Pretdsl" "RDF::TrineX::Serializer::MockTurtleSoup" "Software::License" "Test::More" "Types::Path::Tiny" "Types::Standard" "namespace::autoclean"
 perl:
   - "5.12"
   - "5.14"
   - "5.16"
   - "5.18"
-  - "5.19"
+  - "5.20"
+matrix:
+  include:
+    - perl: 5.18.2
+      env: COVERAGE=1         # enables coverage+coveralls reporting
+before_install:
+  - export DIST_INKT_PROFILE="Dist::Inkt::Profile::TOBYINK"
+  - git clone git://github.com/tobyink/perl-travis-helper
+  - source perl-travis-helper/init
+  - build-perl
+  - perl -V
+  - build-dist
+  - cd $BUILD_DIR             # $BUILD_DIR is set by the build-dist command
+install:
+  - cpan-install --toolchain  # installs a vaguely recent EUMM, Exporter
+  - cpan-install --deps       # installs prereqs, including recommends
+  - cpan-install --coverage   # installs converage prereqs, if enabled
+before_script:
+  - coverage-setup
+script:
+  - prove -l -j$((SYSTEM_CORES + 1)) $(test-dirs)   # parallel testing
+after_success:
+  - coverage-report
+
