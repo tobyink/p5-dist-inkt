@@ -12,6 +12,7 @@ use Types::Standard -types;
 use Types::Path::Tiny -types;
 use Path::Tiny 'path';
 use Path::Iterator::Rule;
+use Module::Runtime qw(use_package_optimistically);
 use namespace::autoclean;
 
 has name => (
@@ -61,9 +62,20 @@ has rootdir => (
 	},
 );
 
+has targetdir_pattern => (
+	is       => 'ro',
+	isa      => Str,
+	lazy     => 1,
+	builder  => '_build_targetdir_pattern',
+);
+
+sub _build_targetdir_pattern {
+	'%(name)s-%(version)s'
+}
+
 has targetdir => (
 	is       => 'ro',
-	isa      => AbsDir,
+	isa      => Path,
 	lazy     => 1,
 	coerce   => 1,
 	builder  => '_build_targetdir',
@@ -76,11 +88,17 @@ has targetdir => (
 sub _build_targetdir
 {
 	my $self = shift;
-	my $name = sprintf('%s-%s', $self->name, $self->version);
 	
-	my $dir = $self->rootdir->child($name);
-	$dir->mkpath;
-	return $dir;
+	require Text::sprintfn;
+	my $name = Text::sprintfn::sprintfn(
+		$self->targetdir_pattern,
+		{
+			name     => $self->name,
+			version  => $self->version,
+		},
+	);
+	
+	$self->rootdir->child($name);
 }
 
 has metadata => (
@@ -146,11 +164,44 @@ has rights_for_generated_files => (
 
 sub _inherited_rights {}
 
+sub new_from_ini
+{
+	my $self   = shift;
+	my $ini    = shift;
+	my (%args) = @_;
+	
+	if (defined $ini)
+	{
+		$ini = File->assert_coerce($ini);
+	}
+	else
+	{
+		require Cwd;
+		$ini = path(Cwd::cwd)->child('dist.ini');
+		$ini->exists or confess("Could not find dist.ini; bailing out");
+	}
+	
+	my @lines = grep /^;;/, $ini->lines_utf8;
+	chomp @lines;
+	
+	my %config = map {
+		s/(?:^;;\s*)|(?:\s*$)//g;
+		my ($key, $value) = split /\s*=\s*/, $_, 2;
+		$key => scalar(eval($value));
+	} @lines;
+	
+	my $class = delete($config{class}) || 'Dist::Inkt::Profile::Simple';
+	
+	$config{rootdir} ||= $ini->dirname;
+	
+	use_package_optimistically($class)->new(%config, %args);
+}
+
 sub BUILD
 {
 	my $self = shift;
-	
 	return if $self->{_already_built}++;
+	
 	$self->PopulateModel;
 	$self->PopulateMetadata;
 	
@@ -188,6 +239,7 @@ sub BuildTargets
 	my $self = shift;
 	
 	$self->cleartarget;
+	$self->targetdir->mkpath;
 	
 	$self->Build_Files if $self->DOES('Dist::Inkt::Role::CopyFiles');
 	
@@ -239,13 +291,21 @@ sub BuildTarball
 	$tar->write($file, Archive::Tar::COMPRESS_GZIP());
 }
 
+has should_compress => (
+	is       => 'ro',
+	isa      => Bool,
+	default  => sub { !$ENV{PERL_DIST_INKT_NOTARBALL} },
+);
+
 sub BuildAll
 {
 	my $self = shift;
 	$self->BuildTargets;
 	$self->BuildManifest;
-	$self->BuildTarball unless $ENV{PERL_DIST_INKT_NOTARBALL};
-	$self->cleartarget unless $ENV{PERL_DIST_INKT_KEEPDIR};
+	if ($self->should_compress) {
+		$self->BuildTarball;
+		$self->cleartarget;
+	}
 }
 
 sub log

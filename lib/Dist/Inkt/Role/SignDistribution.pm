@@ -5,13 +5,19 @@ our $VERSION   = '0.019';
 
 use Moose::Role;
 use Module::Signature ();
+use Types::Standard qw(Bool);
 use File::chdir;
 use namespace::autoclean;
 
+has should_sign => (
+	is       => 'ro',
+	isa      => Bool,
+	default  => sub { !$ENV{PERL_DIST_INKT_NOSIGNATURE} },
+);
+
 after BUILD => sub {
 	my $self = shift;
-	unshift @{ $self->targets }, 'SIGNATURE'
-		unless $ENV{PERL_DIST_INKT_NOSIGNATURE};
+	unshift @{ $self->targets }, 'SIGNATURE' if $self->should_sign;
 };
 
 sub Build_SIGNATURE
@@ -29,7 +35,8 @@ sub Build_SIGNATURE
 after BuildManifest => sub {
 	my $self = shift;
 	
-	$self->targetfile('SIGNATURE')->exists or return;
+	$self->should_sign or return;
+	$self->targetfile('SIGNATURE')->exists or die("Missing SIGNATURE");
 	
 	local $CWD = $self->targetdir;
 	system("cpansign sign");

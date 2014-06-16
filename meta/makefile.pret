@@ -12,6 +12,7 @@
 	:runtime-requirement  [ :on "Module::CPANfile 1.0002"^^:CpanId ];
 	:runtime-requirement  [ :on "Module::Metadata 0"^^:CpanId ];
 	:runtime-requirement  [ :on "Module::Signature 0"^^:CpanId ];
+	:runtime-requirement  [ :on "Module::Runtime 0"^^:CpanId ];
 	:runtime-requirement  [ :on "Moose 2.0800"^^:CpanId ];
 	:runtime-requirement  [ :on "Path::Iterator::Rule 0"^^:CpanId ];
 	:runtime-requirement  [ :on "Path::Tiny 0"^^:CpanId ];
