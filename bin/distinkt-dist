@@ -25,7 +25,7 @@ __END__
 
 =encoding utf-8
 
-=for stopwords gzipped tarball
+=for stopwords gzipped tarball distinkt-dist --targetdir --travis
 
 =head1 NAME
 

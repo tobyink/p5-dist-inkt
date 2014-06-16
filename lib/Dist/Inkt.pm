@@ -332,6 +332,8 @@ sub BuildTravisYml
 	
 	my $class = ref($self);
 	
+## no Test::Tabs
+	
 	print {$yml} <<"TAIL";
 matrix:
   include:
@@ -357,6 +359,8 @@ after_success:
   - coverage-report
 
 TAIL
+
+## use Test::Tabs
 	
 	return;
 }
