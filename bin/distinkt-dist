@@ -53,7 +53,7 @@ Defaults to true.
 
 Defaults to true.
 
-=item B<< --travis >>
+=item B<< --TRAVIS >>
 
 Shortcut for C<< --should_sign=0 --should_compress=0 >>.
 
