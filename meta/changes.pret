@@ -150,3 +150,9 @@
 		item "Better integration with haarg's perl-travis-helper stuff."^^Change;
 		item "Added stub pod to command line scripts."^^Documentation;
 	].
+
+`Dist-Inkt 0.021 cpan:TOBYINK`
+	issued  2014-06-16;
+	changeset [
+		item "Fix documentation of the `--TRAVIS` option."^^Documentation;
+	].
