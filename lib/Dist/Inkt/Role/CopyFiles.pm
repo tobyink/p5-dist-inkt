@@ -30,6 +30,7 @@ sub _build_manifest_skip
 	my $name = quotemeta($self->name);
 	return [
 		qr!^(meta|xt|blib|cover_db)/!,
+		qr!^(perl-travis-helper)/!,
 		qr!^\..!,
 		qr!^[Dd]evel.!,
 		qr!~$!,
