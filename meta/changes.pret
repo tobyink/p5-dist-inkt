@@ -142,3 +142,11 @@
 		item "Cope when ~/perl5/standard-documents/ is missing."^^Change;
 		item "Support PERL_DIST_INKT_NOSIGNATURE environment variable to skip building a SIGNATURE file."^^Change;
 	].
+
+`Dist-Inkt 0.020 cpan:TOBYINK`
+	issued  2014-06-16;
+	changeset [
+		item "Improvements to command line scripts."^^Change;
+		item "Better integration with haarg's perl-travis-helper stuff."^^Change;
+		item "Added stub pod to command line scripts."^^Documentation;
+	].
