@@ -140,7 +140,7 @@ sub conflict_check_code
 for my $stage (keys %{$meta->{prereqs}})
 {
 	my $conflicts = $meta->{prereqs}{$stage}{conflicts} or next;
-	require CPAN::Meta::Requirements;
+	eval { require CPAN::Meta::Requirements } or last;
 	$conflicts = 'CPAN::Meta::Requirements'->from_string_hash($conflicts);
 	
 	for my $module ($conflicts->required_modules)
