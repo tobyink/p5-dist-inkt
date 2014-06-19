@@ -152,7 +152,8 @@
 	].
 
 `Dist-Inkt 0.021 cpan:TOBYINK`
-	issued  2014-06-16;
+	issued  2014-06-19;
 	changeset [
 		item "Fix documentation of the `--TRAVIS` option."^^Documentation;
+		item "Generated Makefile.PL should cope better if CPAN::Meta::Requirements is missing."^^Change;
 	].
