@@ -31,14 +31,14 @@ after PopulateMetadata => sub
 	for my $dir ( @{ $self->metadata->{no_index}{directory} or [] } ) {
 		for my $pkg (keys %$provides) {
 			delete $provides->{$pkg}
-				if $provides->{file} =~ m{^\Q$dir\E/};
+				if $provides->{$pkg}{file} =~ m{^\Q$dir\E/};
 		}
 	}
 	
 	for my $file ( @{ $self->metadata->{no_index}{file} or [] } ) {
 		for my $pkg (keys %$provides) {
 			delete $provides->{$pkg}
-				if $provides->{file} eq $file;
+				if $provides->{$pkg}{file} eq $file;
 		}
 	}
 	
