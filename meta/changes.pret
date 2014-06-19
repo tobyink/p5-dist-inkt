@@ -157,3 +157,10 @@
 		item "Fix documentation of the `--TRAVIS` option."^^Documentation;
 		item "Generated Makefile.PL should cope better if CPAN::Meta::Requirements is missing."^^Change;
 	].
+
+`Dist-Inkt 0.022 cpan:TOBYINK`
+	issued  2014-06-19;
+	changeset [
+		item "Fix check for existence of meta/META.PL."^^Bugfix;
+		item "Filter $meta->{provides} using $meta->{no_index}."^^Change;
+	].

@@ -1,7 +1,7 @@
 package Dist::Inkt::Role::WriteLICENSE;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.021';
+our $VERSION   = '0.022';
 
 use Moose::Role;
 use Software::LicenseUtils;
