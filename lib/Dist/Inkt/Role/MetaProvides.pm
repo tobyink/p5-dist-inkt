@@ -17,25 +17,25 @@ after PopulateMetadata => sub
 		dir      => $self->sourcefile('lib'),
 	);
 	
-	for my $pkg ( @{ $self->metadata->{no_index}{package} ) {
+	for my $pkg ( @{ $self->metadata->{no_index}{package} or [] } ) {
 		delete $provides->{$pkg};
 	}
 	
-	for my $ns ( @{ $self->metadata->{no_index}{namespace} ) {
+	for my $ns ( @{ $self->metadata->{no_index}{namespace} or [] } ) {
 		for my $pkg (keys %$provides) {
 			delete $provides->{$pkg}
 				if $pkg =~ m{^\Q$ns\E::};
 		}
 	}
 	
-	for my $dir ( @{ $self->metadata->{no_index}{directory} ) {
+	for my $dir ( @{ $self->metadata->{no_index}{directory} or [] } ) {
 		for my $pkg (keys %$provides) {
 			delete $provides->{$pkg}
 				if $provides->{file} =~ m{^\Q$dir\E/};
 		}
 	}
 	
-	for my $file ( @{ $self->metadata->{no_index}{file} ) {
+	for my $file ( @{ $self->metadata->{no_index}{file} or [] } ) {
 		for my $pkg (keys %$provides) {
 			delete $provides->{$pkg}
 				if $provides->{file} eq $file;
