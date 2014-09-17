@@ -8,9 +8,19 @@ use Path::FindDev qw(find_dev);
 
 local($CWD) = find_dev(cwd);
 
+my %travis_opts = (
+	should_sign          => 0,
+	should_compress      => 0,
+	should_release       => 0,
+	skip_prebuild_tests  => 1,
+	skip_build_tests     => 1,
+	skip_tarball_tests   => 1,
+);
+
 my %opts = map {
-	/^--TRAVIS$/     ? (should_sign => 0, should_compress => 0) :
+	/^--TRAVIS$/     ? (%travis_opts) :
 	/^--(\w+)=(.+)$/ ? ($1 => $2) :
+	/^--(\w+)$/      ? ($1 => 1) :
 	die("Unrecognized argument: $_");
 } @ARGV;
 
