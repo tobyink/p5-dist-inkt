@@ -15,6 +15,17 @@ use Path::Iterator::Rule;
 use Module::Runtime qw(use_package_optimistically);
 use namespace::autoclean;
 
+sub builder_id {
+	my $real_class = shift->_real_class;
+	sprintf('%s version %s', $real_class, $real_class->VERSION);
+}
+
+sub _real_class {
+	my $self = shift;
+	my ($real_class) = grep !/__ANON__/, Moose::Util::find_meta($self)->class_precedence_list;
+	$real_class;
+}
+
 has name => (
 	is       => 'ro',
 	isa      => Str,
@@ -116,7 +127,7 @@ sub _build_metadata
 		name           => $self->name,
 		version        => $self->version,
 		no_index       => { directory => [qw/ eg examples inc t xt /] },
-		generated_by   => sprintf('%s version %s', ref($self), $self->VERSION),
+		generated_by   => $self->builder_id,
 		dynamic_config => 0,
 	});
 	for (qw/ license author /) {
@@ -330,7 +341,7 @@ sub BuildTravisYml
 		}
 	}
 	
-	my $class = ref($self);
+	my $class = $self->_real_class;
 	
 ## no Test::Tabs
 	
@@ -338,7 +349,7 @@ sub BuildTravisYml
 matrix:
   include:
     - perl: 5.18.2
-      env: COVERAGE=1         # enables coverage+coveralls reporting
+      env: COVERAGE=1
 before_install:
   - export DIST_INKT_PROFILE="$class"
   - git clone git://github.com/tobyink/perl-travis-helper
@@ -346,15 +357,15 @@ before_install:
   - build-perl
   - perl -V
   - build-dist
-  - cd \$BUILD_DIR             # \$BUILD_DIR is set by the build-dist command
+  - cd \$BUILD_DIR
 install:
-  - cpan-install --toolchain  # installs a vaguely recent EUMM, Exporter
-  - cpan-install --deps       # installs prereqs, including recommends
-  - cpan-install --coverage   # installs converage prereqs, if enabled
+  - cpan-install --toolchain
+  - cpan-install --deps
+  - cpan-install --coverage
 before_script:
   - coverage-setup
 script:
-  - prove -l -j\$((SYSTEM_CORES + 1)) \$(test-dirs)   # parallel testing
+  - prove -l \$(test-dirs)
 after_success:
   - coverage-report
 
