@@ -164,3 +164,10 @@
 		item "Fix check for existence of meta/META.PL."^^Bugfix;
 		item "Filter $meta->{provides} using $meta->{no_index}."^^Change;
 	].
+
+`Dist-Inkt 0.023 cpan:TOBYINK`
+	issued  2014-09-17;
+	changeset [
+		item "Improve command-line option handling."^^Change;
+		item "Avoid outputting anonymous class names."^^Change;
+	].
