@@ -296,7 +296,7 @@ sub BuildTarball
 	{
 		my $abs = path($_);
 		$tar->add_files($abs);
-		$tar->rename(substr($abs, 1), "$pfx/".$abs->relative($root));
+		$tar->rename(substr("$abs", 1), "$pfx/".$abs->relative($root));
 	}
 	
 	$tar->write($file, Archive::Tar::COMPRESS_GZIP());
