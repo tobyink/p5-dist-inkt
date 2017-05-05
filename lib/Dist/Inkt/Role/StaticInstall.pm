@@ -9,7 +9,7 @@ use namespace::autoclean;
 
 has no_static_install => (is => 'ro', default => sub { !!0 });
 
-before Build_MakefilePL => sub
+after PopulateMetadata => sub
 {
 	my $self = shift;
 	
