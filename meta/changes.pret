@@ -171,3 +171,9 @@
 		item "Improve command-line option handling."^^Change;
 		item "Avoid outputting anonymous class names."^^Change;
 	].
+
+`Dist-Inkt 0.024 cpan:TOBYINK`
+	issued  2017-05-05;
+	changeset [
+		item "Support x_static_install."^^Addition;
+	].
