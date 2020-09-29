@@ -177,3 +177,9 @@
 	changeset [
 		item "Support x_static_install."^^Addition;
 	].
+
+`Dist-Inkt 0.025 cpan:TOBYINK`
+	issued  2020-09-29;
+	changeset [
+		item "Selectively include FixMakefile stuff in Makefile.PL only for distributions that need it."^^Change;
+	].
