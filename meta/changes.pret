@@ -183,3 +183,9 @@
 	changeset [
 		item "Selectively include FixMakefile stuff in Makefile.PL only for distributions that need it."^^Change;
 	].
+
+`Dist-Inkt 0.026 cpan:TOBYINK`
+	issued  2021-07-31;
+	changeset [
+		item "Fix random issue with Archive::Tar."^^Bugfix;
+	].
